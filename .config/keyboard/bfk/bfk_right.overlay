@@ -1,0 +1,27 @@
+// iris_right.overlay
+
+#include "bfk.dtsi"
+
+&default_transform {
+    col-offset = <7>;
+};
+
+&kscan0 {
+    col-gpios
+        = <&pro_micro_d 3  GPIO_ACTIVE_HIGH >
+        , <&pro_micro_d 4  GPIO_ACTIVE_HIGH >
+        , <&pro_micro_d 5  GPIO_ACTIVE_HIGH >
+        , <&pro_micro_d 6  GPIO_ACTIVE_HIGH >
+        , <&pro_micro_d 7  GPIO_ACTIVE_HIGH >
+        , <&pro_micro_d 8  GPIO_ACTIVE_HIGH >
+        , <&pro_micro_d 9  GPIO_ACTIVE_HIGH >
+        ;
+};
+
+&encoder_rthumb {
+    status = "okay";
+};
+
+&encoder_rfinger {
+    status = "okay";
+};

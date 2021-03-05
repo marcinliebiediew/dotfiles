@@ -1,0 +1,275 @@
+# vim: filetype=i3config
+
+set $windows Mod4
+set $caps Control
+set $ctrl Control
+set $alt Mod1
+set $fn XF86WakeUp
+set $altgr Mod5
+set $layout_control Mod4+Mod3
+set $monitor eDP-1-1 # my laptop's internal screen
+
+# SYSTEM 
+exec --no-startup-id aw-qt
+exec --no-startup-id jupyter notebook --NotebookApp.token= --no-browser --port 39999
+exec --no-startup-id sudo powertop --auto-tune
+exec_always --no-startup-id autotiling
+## DISPLAY & MULTIHEAD
+exec --no-startup-id dockd --daemon
+exec --no-startup-id xrandr --output eDP-1-1 --auto
+bindsym XF86Display exec "sh ~/.screenlayout/3screens.sh"
+bindsym Shift+XF86Display exec "sh ~/.screenlayout/onlylaptop.sh"
+## BACKLIGHT
+bindcode 232 exec light -U 2
+bindcode 233 exec light -A 2
+## LOCKSCREEN
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+bindsym $windows+$alt+l exec --no-startup-id i3lock -i ~/Pictures/pinetree.png -c 000000 -e -f -t
+## SOUND
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+bindsym $windows+F1 exec python ~/.config/scripts/rofi_audio_source.py
+## KEYMAP
+bindsym $windows+$ctrl+$alt+space exec --no-startup-id  fish -c toggle_keymap
+## HOTFIXES
+bindsym XF86Favorites exec --no-startup-id fish -c fix
+bindsym $windows+F10 exec --no-startup-id fish -c fix
+## WALLPAPER
+exec_always bgchd -dir /home/marcin/Pictures/wallpapers/ -intv 30m -bcknd feh
+bindsym $alt+w exec --no-startup-id bgctl next
+bindsym $alt+Shift+w exec --no-startup-id bgctl prev
+## CLIPBOARD
+exec --no-startup-id greenclip daemon>/dev/null
+## SCREENSHOT
+bindsym Print --release exec "scrot -s /home/marcin/Pictures/Screenshots/screenshot-$(date +%F_%T).png -e 'xclip -selection c -t image/png < $f'"
+bindsym Shift+Print exec "scrot -s -u /home/marcin/Pictures/Screenshots/sc.png"
+bindsym $windows+Print exec fish -c rip_content
+bindsym $windows+Shift+Print exec "scrot -s -e 'mv $f /tmp/ && gimp /tmp/$f'"
+
+# CAPTURE
+bindsym $windows+XF86AudioMicMute exec fish -c voice
+bindsym $windows+F4 exec fish -c voice
+# bindsym F12 exec --no-startup-id "xdotool key ctrl+l; xdotool key ctrl+c; xclip -o >> ~/org/roam/20201211211144-bookmarks.org"
+
+# MENUS
+bindsym $windows+space exec "rofi -combi-modi drun,system -show drun"
+bindsym $windows+XF86TouchpadOff exec "rofi -modi window -show"
+bindsym $windows+$alt+e exec "rofimoji -s neutral --rofi-args \\" -color-window '#000000, #000000, #000000' -color-normal '#000000, #ffffff, #000000, #ffffff, #000000' -color-active '#000000, #b3e774, #000000, #ffffff, #b3e774' -color-urgent '#000000, #b3e774, #000000, #b3e774, #000000' -font 'JetBrains Mono 32' -show-icons\\""
+
+## APPS
+bindsym $windows+$alt+d exec "python ~/.config/scripts/grab_i3_floating.py --app spotify"
+# BROWSERS
+# bindsym $windows+$alt+b exec --no-startup-id qutebrowser
+bindsym $windows+$alt+b exec --no-startup-id librewolf 
+# bindsym $windows+$alt+c exec --no-startup-id brave
+bindsym $windows+$alt+c exec --no-startup-id chromium
+# TERMINAL
+bindsym $windows+Return exec alacritty -e "tmux"
+bindsym $windows+$alt+i exec alacritty -e "ipython"
+#bindsym $windows+f exec alacritty -e "ranger"
+# EDITORS
+bindsym $windows+$alt+p exec "python ~/.config/scripts/grab_i3_floating.py --app emacs"
+bindsym $windows+$alt+t exec emacsclient --eval '(org-capture)' -c
+bindsym $windows+$alt+v exec alacritty -e "nvim"
+bindsym $windows+$alt+a exec emacsclient -c --eval '(org-agenda nil "d")'
+bindsym $windows+$alt+z exec emacsclient --eval '(emacs-everywhere)' 
+
+# i3 CONTROL
+bindsym $alt+q kill
+bindsym $windows+$alt+$ctrl++c reload
+bindsym $windows+$alt+$ctrl+r restart
+bindsym $windows+Shift+q exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+bindsym $windows+Shift+$alt+q exec "i3-msg exit"
+bindsym $windows+Shift+$alt+Control+q exit
+
+# WORKSPACE FOCUS 
+bindsym $windows+Tab workspace next
+bindsym $windows+Shift+Tab workspace prev
+bindsym $windows+BackSpace workspace back_and_forth 
+
+# LAYOUT TYPE  
+bindsym $alt+f fullscreen toggle
+# bindsym $windows+f fullscreen toggle
+bindsym $windows+g layout tabbed
+bindsym $windows+d layout toggle split
+bindsym $windows+b focus mode_toggle
+bindsym $windows+Shift+b floating toggle
+bindsym $windows+j layout tabbed
+bindsym $windows+h layout toggle split
+bindsym $windows+k focus mode_toggle
+bindsym $windows+Shift+k floating toggle
+bindsym $windows+bracketleft focus parent
+bindsym $windows+apostrophe focus child
+bindsym $windows+minus split h
+bindsym $windows+equal split v
+bindsym $windows+asterisk floating enable; move absolute position 100 100
+bindsym $windows+bar floating enable; move absolute position 1600 100
+floating_modifier $windows
+# bindsym $windows+Shift+v split v; focus parent; fullscreen toggle; focus child
+# bindsym $windows+Shift+f focus parent; fullscreen toggle
+
+# LAYOUT  ARRANGE
+bindsym $windows+q move left
+bindsym $windows+w move down
+bindsym $windows+f move up
+bindsym $windows+p move right
+bindsym $windows+Left focus left
+bindsym $windows+Down focus down
+bindsym $windows+Up focus up
+bindsym $windows+Right focus right
+bindsym $windows+a focus left
+bindsym $windows+r focus down
+bindsym $windows+s focus up
+bindsym $windows+t focus right
+bindsym $windows+n focus left
+bindsym $windows+e focus down
+bindsym $windows+i focus up
+bindsym $windows+o focus right
+bindsym $windows+z resize shrink width 55 px or 3 ppt
+bindsym $windows+x resize grow height 55 px or 3 ppt
+bindsym $windows+c resize shrink height 55 px or 3 ppt
+bindsym $windows+v resize grow width 55 px or 3 ppt
+# bindsym $windows+l move left
+# bindsym $windows+u move down
+# bindsym $windows+y move up
+# bindsym $windows+semicolon move right
+# bindsym $windows+Left focus left
+# bindsym $windows+Down focus down
+# bindsym $windows+Up focus up
+# bindsym $windows+Right focus right
+# bindsym $windows+n focus left
+# bindsym $windows+e focus down
+# bindsym $windows+i focus up
+# bindsym $windows+o focus right
+# bindsym $windows+m resize shrink width 55 px or 3 ppt
+# bindsym $windows+comma resize grow height 55 px or 3 ppt
+# bindsym $windows+period resize shrink height 55 px or 3 ppt
+# bindsym $windows+slash resize grow width 55 px or 3 ppt
+
+# WORKSPACES
+# bindsym $windows+w exec --no-startup-id  fish -c change_workspace_name 
+# | read $ws | i3-input -F 'rename workspace to "$($focused_workspace_number):%s"' -P 'New name for this workspace: '  
+set $ws1 "1:work"
+set $ws2 "2:work"
+set $ws3 "3:work"
+set $ws4 "4:com"
+set $ws5 "5:work"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+set $ws11 "11"
+set $ws12 "12"
+set $ws13 "13"
+set $ws14 "14"
+set $ws15 "15:work"
+set $ws16 "16"
+set $ws17 "17"
+set $ws18 "18"
+set $ws19 "19:media"
+set $ws20 "20:music"
+bindsym $windows+1 workspace number $ws1
+bindsym $windows+2 workspace number $ws2
+bindsym $windows+3 workspace number $ws3
+bindsym $windows+4 workspace number $ws4
+bindsym $windows+5 workspace number $ws5
+bindsym $windows+6 workspace number $ws6
+bindsym $windows+7 workspace number $ws7
+bindsym $windows+8 workspace number $ws8
+bindsym $windows+9 workspace number $ws9
+bindsym $windows+0 workspace number $ws10
+bindsym $windows+$alt+1 workspace number $ws11
+bindsym $windows+$alt+2 workspace number $ws12
+bindsym $windows+$alt+3 workspace number $ws13
+bindsym $windows+$alt+4 workspace number $ws14
+bindsym $windows+$alt+5 workspace number $ws15
+bindsym $windows+$alt+6 workspace number $ws16
+bindsym $windows+$alt+7 workspace number $ws17
+bindsym $windows+$alt+8 workspace number $ws18
+bindsym $windows+$alt+9 workspace number $ws19
+bindsym $windows+$alt+0 workspace number $ws20
+bindsym $windows+Shift+1 move container to workspace number $ws1
+bindsym $windows+Shift+2 move container to workspace number $ws2
+bindsym $windows+Shift+3 move container to workspace number $ws3
+bindsym $windows+Shift+4 move container to workspace number $ws4
+bindsym $windows+Shift+5 move container to workspace number $ws5
+bindsym $windows+Shift+6 move container to workspace number $ws6
+bindsym $windows+Shift+7 move container to workspace number $ws7
+bindsym $windows+Shift+8 move container to workspace number $ws8
+bindsym $windows+Shift+9 move container to workspace number $ws9
+bindsym $windows+Shift+0 move container to workspace number $ws10
+bindsym $windows+$alt+Shift+1 move container to workspace number $ws11
+bindsym $windows+$alt+Shift+2 move container to workspace number $ws12
+bindsym $windows+$alt+Shift+3 move container to workspace number $ws13
+bindsym $windows+$alt+Shift+4 move container to workspace number $ws14
+bindsym $windows+$alt+Shift+5 move container to workspace number $ws15
+bindsym $windows+$alt+Shift+6 move container to workspace number $ws16
+bindsym $windows+$alt+Shift+7 move container to workspace number $ws17
+bindsym $windows+$alt+Shift+8 move container to workspace number $ws18
+bindsym $windows+$alt+Shift+9 move container to workspace number $ws19
+bindsym $windows+$alt+Shift+0 move container to workspace number $ws20
+
+# BAR
+bar {
+    mode hide
+    hidden_state hide
+    modifier $windows
+    font pango:DejaVu Sans Mono, FontAwesome 12
+    position top
+    status_command /usr/bin/i3status-rs /home/marcin/.config/i3/status.toml
+    colors {
+        separator #ffffff
+        background #000000
+        statusline #000000
+        focused_workspace #ff0000 #000000 #ffffff
+        active_workspace #333333 #333333 #ffffff
+        inactive_workspace #000000 #000000 #ffffff
+        urgent_workspace #2f343a #900000 #ffffff
+    }
+}
+
+# GAPS
+for_window [class="^.*"] border pixel 3
+gaps inner 39
+gaps left 100
+gaps right 100
+gaps horizontal 10
+smart_gaps inverse_outer
+set $mode_gaps Gaps: (o) outer, (i) inner
+set $mode_gaps_outer Outer Gaps: +|-|0 (local), Shift + +|-|0 (global)
+set $mode_gaps_inner Inner Gaps: +|-|0 (local), Shift + +|-|0 (global)
+bindsym $windows+grave mode "$mode_gaps"
+mode "$mode_gaps" {
+        bindsym o      mode "$mode_gaps_outer"
+        bindsym i      mode "$mode_gaps_inner"
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+mode "$mode_gaps_inner" {
+        bindsym plus  gaps inner current plus 5
+        bindsym minus gaps inner current minus 5
+        bindsym 0     gaps inner current set 0
+
+        bindsym Shift+plus  gaps inner all plus 5
+        bindsym Shift+minus gaps inner all minus 5
+        bindsym Shift+0     gaps inner all set 0
+
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+mode "$mode_gaps_outer" {
+        bindsym plus  gaps outer current plus 5
+        bindsym minus gaps outer current minus 5
+        bindsym 0     gaps outer current set 0
+
+        bindsym Shift+plus  gaps outer all plus 5
+        bindsym Shift+minus gaps outer all minus 5
+        bindsym Shift+0     gaps outer all set 0
+
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+

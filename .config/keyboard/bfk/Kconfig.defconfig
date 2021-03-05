@@ -1,0 +1,23 @@
+if SHIELD_BFK_LEFT
+
+config ZMK_KEYBOARD_NAME
+    default "BFK Left"
+
+endif
+
+if SHIELD_BFK_RIGHT
+
+config ZMK_KEYBOARD_NAME
+    default "BFK Right"
+
+config ZMK_SPLIT_BLE_ROLE_CENTRAL
+    default y
+
+endif
+
+if SHIELD_BFK_LEFT || SHIELD_BFK_RIGHT
+
+config ZMK_SPLIT
+    default y
+
+endif

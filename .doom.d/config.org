@@ -1,0 +1,912 @@
+#+STARTUP: overview
+#+VISIBILITY: folded
+
+* 🏇 start
+#+begin_src emacs-lisp
+(setq user-full-name "Marcin Nowak-Liebiediew"
+      user-mail-address "m.liebiediew@gmail.com")
+(setq doom-font (font-spec :family "monospace" :size 26 :weight 'semi-light)
+      doom-variable-pitch-font (font-spec :family "sans" :size 24))
+(setq display-line-numbers-type nil)
+(setq fancy-splash-image "~/Pictures/8bitwinter2.png")
+#+end_src
+* <3 life in emacs
+** :snake: eaf
+#+begin_src emacs-lisp
+;;(use-package! eaf
+;;  :load-path "/usr/share/emacs/site-lisp/eaf"
+;;  :init
+;;  (use-package! epc :ensure t)
+;;  (use-package! ctable :ensure t)
+;;  (use-package! deferred :ensure t)
+;;  (use-package! s :ensure t)
+;;  :custom
+;;  (eaf-browser-continue-where-left-off t)
+;;  :config
+;;  (eaf-setq eaf-browser-enable-adblocker "true")
+;;  (eaf-bind-key scroll_up "C-n" eaf-pdf-viewer-keybinding)
+;;  (eaf-bind-key scroll_down "C-p" eaf-pdf-viewer-keybinding)
+;;  (eaf-bind-key take_photo "p" eaf-camera-keybinding)
+;;  (eaf-bind-key scroll_up "C-n" eaf-pdf-viewer-keybinding)
+;;  )
+#+end_src
+** 🎠 exwm
+#+begin_src emacs-lisp
+;;(use-package! exwm
+;;  :hook ((exwm-update-title . exwm-rename-buffer-to-class+title))
+;;  :config
+;;  (defun exwm-rename-buffer-to-class+title ()
+;;    "Update exwm buffenr name with the X class name and the actual X window name"
+;;    (let ((title (concat exwm-class-name " - " exwm-title)))
+;;      (exwm-workspace-rename-buffer
+;;       (if (< (length title) 43)
+;;           title
+;;         (concat (substring title 0 43) "...")))))
+;;
+;;  (start-file-process-shell-command "xmodmap" nil "xmodmap" "~/.Xmodmap")
+;;  (start-process-shell-command "feh" nil "feh --bg-scale /home/marcin/.config/wall.png")
+;;  (start-process-shell-command "bgchd" nil "bgchd -dir /home/marcin/Pictures/wallpapers/ -intv 5m -bcknd feh")
+;;  (start-process-shell-command "dockd" nil "dockd --daemon")
+;;  (start-process-shell-command "jupyter" nil "jupyter notebook --NotebookApp.token= --no-browser --port 9999")
+;;  (start-process-shell-command "powertop" nil "sudo powertop --auto-tune")
+;;  (start-process-shell-command "keylogger" nil "/bin/llk")
+;;  (start-process-shell-command "polybar" nil "polybar mybar")
+;;  (setq exwm-workspace-number 4)
+;;  (setq exwm-workspace-show-all-buffers t)
+;;  (setq exwm-layout-show-all-buffers t)
+;;  ;;(setq exwm-input-line-mode-passthrough t)
+;;  ;; (add-hook! 'exwm-manage-finish-hook (lambda () (call-interactively #'exwm-input-release-keyboard)))
+;;  ;; ;; Ensure that when char mode is left, state is restored to normal
+;;  ;; (advice-add 'exwm-input-grab-keyboard :after (lambda (&optional id)
+;;  ;;                                                 (evil-normal-state)))
+;;  ;; ;; Ensure that when char mode is entered, input state is activated
+;;  ;; (advice-add 'exwm-input-release-keyboard :after (lambda (&optional id)
+;;  ;;                                                   (evil-insert-state)))
+;;  ;; ;; In normal state/line mode, use the familiar i key to switch to input state
+;;  ;; (evil-define-key 'normal exwm-mode-map (kbd "i") 'exwm-input-release-keyboard)
+;;  ;; (push ?\i exwm-input-prefix-keys)
+;;
+;;  (exwm-input-set-key (kbd doom-leader-alt-key) doom-leader-map)
+;;  ;; (start-process-shell-command "xrandr" nil "xrandr --output DP-1.1 --primary --mode 3840x2160 --pos 0x0 --rotate normal --output DP-0 --off --output DP-1 --off --output HDMI-0 --mode 2200x1650 --pos 3840x1335 --rotate left --output eDP-1-1 --mode 3840x2160 --pos 0x2160 --rotate normal")
+;;  ;;(setq exwm-randr-workspace-monitor-plist '(1 "HDMI-0" 2 "DP-0"))
+;;  ;;  (add-hook! 'exwm-randr-screen-change-hook
+;;  ;;    (lambda ()
+;;  ;;      (start-process-shell-command
+;;  ;;       "xrandr" nil "xrandr --output DP-1.1 --right-of DP-0 --auto")))
+;;  ;;  (exwm-randr-enable)
+;;  ;;  ;; When window "class" updates, use it to set the buffer name
+;;  ;;  (add-hook 'exwm-update-class-hook #'efs/exwm-update-class)
+;;  ;; These keys should always pass through to Emacs
+;;  (setq exwm-input-prefix-keys
+;;        '(?\C-x
+;;          ?\C-u
+;;          ?\C-h
+;;          ?\M-x
+;;          ?\M-`
+;;          ?\M-&
+;;          ?\M-:
+;;          ?\C-\M-j  ;; Buffer list
+;;          ?\C-\
+;;          ?\M-\ ))  ;; Ctrl+Space
+;;
+;;  ;; Ctrl+Q will enable the next key to be sent directly
+;;  (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
+;;
+;;  (setq exwm-input-global-keys
+;;        `(
+;;          ;;; system
+;;          ([s-backspace] . exwm-reset)
+;;          ([s-delete] . exwm-exit)
+;;          ([XF86MonBrightnessUp] . (lambda () (interactive) (start-process-shell-command "light" nil "light -A 1")))
+;;          ([XF86MonBrightnessDown] . (lambda () (interactive) (start-process-shell-command "light" nil "light -U 1")))
+;;          ([XF86AudioRaiseVolume] . (lambda () (interactive) (start-process-shell-command "pactl" nil "pactl set-sink-volume @DEFAULT_SINK@ +10%")))
+;;          ([XF86AudioLowerVolume] . (lambda () (interactive) (start-process-shell-command "pactl" nil "pactl set-sink-volume @DEFAULT_SINK@ -10%")))
+;;          ([XF86AudioMute] . (lambda () (interactive) (start-process-shell-command "pactl" nil "pactl set-sink-mute @DEFAULT_SINK@ toggle")))
+;;          ([XF86AudioMicMute] . (lambda () (interactive) (start-process-shell-command "pactl" nil "pactl set-source-mute @DEFAULT_SOURCE@ toggle")))
+;;          ([XF86Favorites] . (lambda () (interactive) (start-process-shell-command "fish" nil "fish -c fix")))
+;;          ([f12] . (lambda () (interactive) (start-process-shell-command "fish" nil "fish -c fix")))
+;;          ([?\s-W] . (lambda () (interactive) (start-process-shell-command "bgctl" nil "bgctl next")))
+;;          ;; visual
+;;
+;;          ;;          ([?\s-=]  . exwm-outer-gaps-mode)
+;;          ;;          ([?\s-+]  . exwm-outer-gaps-increment)
+;;          ;;          ([?\s-\-]  . exwm-outer-gaps-decrement)
+;;          ;;          ([?\s--]  . exwm-outer-gaps-decrement)
+;;          ;; hydras
+;;          ([XF86TouchpadOff] . +hydra/window-nav/body)
+;;          ;; workspace
+;;          ([?\s-w] . exwm-workspace-switch)
+;;          ,@(mapcar (lambda (i)
+;;                      `(,(kbd (format "s-%d" i)) .
+;;                        (lambda ()
+;;                          (interactive)
+;;                          (exwm-workspace-switch-create ,i))))
+;;                    (number-sequence 0 9))
+;;          ;;  ([XF86Launch6] . +workspace/switch-left)
+;;          ;;  ([XF86Launch7] . +workspace/switch-right)
+;;          ;; desktop
+;;          ([?\s-q] . kill-this-buffer)
+;;          ([C-b] . switch-to-buffer)
+;;          ([?\C-b] . switch-to-buffer)
+;;          ([?\s- ] . switch-to-buffer)
+;;          ;; layout
+;;          ([?\s-n] . windmove-left)
+;;          ([?\s-e] . windmove-down)
+;;          ([?\s-i] . windmove-up)
+;;          ([?\s-o] . windmove-right)
+;;          ;; fullscreen / float
+;;          ([?\s-f] . exwm-layout-toggle-fullscreen)
+;;          ([?\M-f] . exwm-layout-toggle-fullscreen)
+;;          ;; focus
+;;          ([XF86TouchpadToggle] . avy-goto-char-timer)
+;;          ([s-XF86TouchpadOff] . avy-goto-char-timer)
+;;          ([XF86TouchpadOn] . avy-goto-line)
+;;          ([C-XF86TouchpadOff] . avy-goto-line)
+;;          ;;    ([f23] . switch-window)
+;;          ;; scroll
+;;          ([M-XF86Launch5] . scroll-other-window)
+;;          ([M-XF86Tools] . scroll-other-window-down)
+;;          ;; apps
+;;          ([XF86Tools] . org-capture)
+;;          ([f6] . org-capture)
+;;          ([s-tab] . +vterm/toggle)
+;;          ([s-return] . switch-to-buffer)
+;;          ([?\s-b] . (lambda () (interactive) (evil-window-vnew nil nil) (start-process-shell-command "qutebrowser" nil "qutebrowser")))
+;;          ([?\s-c] . (lambda () (interactive)  (evil-window-vnew nil nil) (start-process-shell-command "chromium" nil "chromium")))
+;;          ([?\s-m] . (lambda () (interactive) (evil-window-vnew nil nil) (start-process-shell-command "spotify" nil "spotify")))
+;;          ([?\s-v] . (lambda () (interactive) (evil-window-vnew nil nil) (start-process-shell-command "nvim" nil "alacritty -e nvim")))
+;;          ([?\s-x] . (lambda () (interactive) (evil-window-vnew nil nil) (dired "~")))
+;;          ([?\s-X] . (lambda () (interactive) (evil-window-vnew nil nil) (start-process-shell-command "dolphin" nil "dolphin")))
+;;          ([?\s-&] . (lambda (command)
+;;                       (interactive (list (read-shell-command "$ ")))
+;;                       (start-process-shell-command command nil command)))
+;;          ))
+;;  (server-start)
+;;  (exwm-enable)
+;;  )
+#+end_src
+* 💄 UI
+** 🌌 gaps
+#+begin_src emacs-lisp
+;; (use-package! exwm-outer-gaps
+;;   :after (exwm xelb)
+;;   :config
+;;   (exwm-outer-gaps-mode +1))
+#+end_src
+** :bar_chart: status bar
+#+begin_src emacs-lisp
+(defun mnl/send-polybar-hook (name number)
+  (start-process-shell-command "polybar-msg" nil (format "polybar-msg hook %s %s" name number)))
+
+(defun mnl/update-polybar-exwm (&optional path)
+  (mnl/send-polybar-hook "exwm-workspaces" 1)
+  (mnl/send-polybar-hook "exwm-workspace-total" 1))
+
+(add-hook! 'exwm-workspace-switch-hook #'mnl/update-polybar-exwm)
+#+end_src
+** 🐕 help windows
+*** ivy-posframe
+#+begin_src emacs-lisp
+(use-package! ivy-posframe
+  :config
+  (ivy-posframe-mode 1)
+  (setq ivy-posframe-display-functions-alist
+        '((swiper          . ivy-posframe-display-at-point)
+          (complete-symbol . ivy-posframe-display-at-point)
+          (counsel-M-x     . ivy-posframe-display-at-point)
+          (t               . ivy-posframe-display)))
+
+  ;; (setq ivy-posframe-parameters '((parent-frame . nil)
+  ;;                                 (left-fringe . 8)
+  ;;                                 (right-fringe . 8)))
+  )
+#+end_src
+*** which-key-posframe
+#+begin_src emacs-lisp
+;; (use-package! which-key-posframe
+;;   :config
+;;   (which-key-posframe-mode)
+;;   (setq which-key-posframe-poshandler 'posframe-poshandler-frame-center)
+;;   ;; (setq which-key-posframe-parameters '((parent-frame . nil)
+;;   ;;                                       (left-fringe . 8)
+;;   ;;                                       (right-fringe . 8)))
+;;   )
+
+#+end_src
+*** hydra-posframe
+#+begin_src emacs-lisp
+(use-package! hydra
+  :config
+  (setq hydra-hint-display-type 'posframe)
+;;  (setq hydra-posframe-show-params )
+  )
+#+end_src
+*** code completion and docs
+#+begin_src emacs-lisp
+(use-package! lsp-ui
+  ;;:straight t
+  :hook (lsp-mode . lsp-ui-mode)
+  :config
+  (setq lsp-ui-sideline-enable t)
+  (setq lsp-ui-sideline-show-hover t)
+  (setq lsp-ui-sideline-show-hover t)
+  (setq lsp-ui-doc-position 'at-point)
+  (lsp-ui-doc-show))
+;;(tooltip-mode)
+#+end_src
+* 🧭 navigation
+*** code navigation
+#+begin_src emacs-lisp
+(defhydra +hydra/code-nav (:hint nil)
+  "
+ Buffer^^               Server^^                   Symbol
+-------------------------------------------------------------------------------------
+ [_f_] format           [_M-r_] restart            [_d_] declaration  [_i_] implementation  [_o_] documentation
+ [_m_] imenu            [_S_]   shutdown           [_D_] definition   [_t_] type            [_r_] rename
+ [_x_] execute action   [_M-s_] describe session   [_R_] references   [_s_] signature"
+  ("d" lsp-find-declaration)
+  ("D" lsp-ui-peek-find-definitions)
+  ("R" lsp-ui-peek-find-references)
+  ("i" lsp-ui-peek-find-implementation)
+  ("t" lsp-find-type-definition)
+  ("s" lsp-signature-help)
+  ("o" lsp-describe-thing-at-point)
+  ("r" lsp-rename)
+
+  ("<f9>" lsp-ui-doc-show "show doc")
+  ("<S-f9>" lsp-ui-doc-hide "hide doc")
+  ("," lsp-ui-doc-unfocus-frame "focus doc")
+  ("." lsp-ui-doc-focus-frame "unfocus doc")
+
+  ("f" lsp-format-buffer)
+  ("m" lsp-ui-imenu)
+  ("x" lsp-execute-code-action)
+
+  ("M-s" lsp-describe-session)
+  ("M-r" lsp-restart-workspace)
+  ("S" lsp-shutdown-workspace)
+
+  ("SPC" nil "quit")
+  )
+#+end_src
+***  window movement, sizing and placement
+#+begin_src emacs-lisp
+(defhydra +hydra/window-nav (:hint nil)
+  "
+  Switch Window: _n_:left  _e_:down  _i_:up  _o_:right
+         Resize: _N_:left  _E_:down  _I_:up  _O_:right
+         Launch: _a_:left  _r_:down _s_:up _t_ight
+           Move: _A_:left  _R_:down _S_:up _T_ight
+         Delete: _d_is one  _D_oes over der
+        Buffers: _,_:previous  _._:next  _b_:select  _f_ind-file
+        History: _x_:layout backward _c_:layout forward
+         Scroll: _u_:up  _y_:down _U_:other up _Y_:other down
+
+"
+  ;; Workspace: _<_:previous _>_:next _w_:move to workspace _W_:go to workspace
+  ;;     Float: _'_
+  ("n" windmove-left)
+  ("e" windmove-down)
+  ("i" windmove-up)
+  ("o" windmove-right)
+
+  ("N" hydra-move-splitter-left)
+  ("E" hydra-move-splitter-down)
+  ("I" hydra-move-splitter-up)
+  ("O" hydra-move-splitter-right)
+
+  ("a" (progn (split-window-right) (windmove-right) (+evil/window-move-left) (+hydra/app-launcher/body) (hydra-push '(+hydra/app-launcher/body))) :exit t)
+  ("r" (progn (split-window-below) (windmove-down) (+hydra/app-launcher/body) (hydra-push '(+hydra/app-launcher/body))) :exit t)
+  ("s" (progn (split-window-below) (windmove-down) (+evil/window-move-up) (+hydra/app-launcher/body) (hydra-push '(+hydra/app-launcher/body))) :exit t)
+  ("t" (progn (split-window-right) (windmove-right) (+hydra/app-launcher/body) (hydra-push '(+hydra/app-launcher/body))) :exit t)
+
+  ("A" +evil/window-move-left)
+  ("R" +evil/window-move-down)
+  ("S" +evil/window-move-up)
+  ("T" +evil/window-move-right)
+
+  ("y" scroll-up-line)
+  ("u" scroll-down-line)
+  ("Y" scroll-other-window)
+  ("U" scroll-other-window-down)
+
+  ("b" switch-to-buffer)
+  ("f" find-file)
+  ("d" delete-window :exit t)
+  ("D" delete-other-windows)
+  ("," previous-buffer)
+  ("." next-buffer)
+
+  ;; ("<" (exwm-workspace-switch (- exwm-workspace-current-index 1)))
+  ;; (">" (exwm-workspace-switch (+ exwm-workspace-current-index 1)))
+  ;; ("w" exwm-workspace-move-window)
+  ;; ;; TODO move and follow
+  ;; ("W" exwm-workspace-switch :quit t)
+  ;; ("'" exwm-floating-toggle-floating)
+
+  ("m" doom/window-maximize-vertically "vermax")
+  ("M" doom/window-maximize-horizontally "hormax")
+
+  ("x" winner-undo)
+  ("c" winner-redo)
+
+  ("<XF86TouchpadOff>" switch-window "switch" :exit t)
+
+
+
+  ("SPC" nil "quit"))
+#+end_src
+*** text movement
+#+begin_src emacs-lisp
+(map! :g "<XF86Launch6>" #'goto-last-change)
+(map! :g "<XF86TouchpadToggle>" #'avy-goto-char-timer)
+(map! :g "<XF86TouchpadOn>" #'avy-goto-line)
+
+(map! :g "<s-f5>" #'avy-goto-char-timer)
+(map! :g "<s-f6>" #'avy-goto-line)
+(map! :g "<s-f7>" #'avy-goto-line)
+(map! :g "<s-f8>" #'swiper)
+
+(map! :g "<f5>" #'evil-scroll-down)
+(map! :g "<f6>" #'evil-scroll-up)
+(map! :g "<f7>" #'scroll-other-window-down)
+(map! :g "<f8>" #'scroll-other-window)
+
+(map! :g "<s-XF86Launch7>" #'goto-last-change)
+(map! :g "<s-XF86Launch8>" #'goto-last-change-reverse)
+(map! :g "<XF86Tools>" #'org-capture)
+;;(map! :g "c-TAB" #'+vterm/toggle)
+;;(map! :g "C-RET" #'switch-to-buffer)
+;; (map! :g "?\s-x"(lambda () (interactive) (evil-window-vnew nil nil) (dired "~")))
+;; (map! :g "?\s-&" (lambda (command)
+;;              (interactive (list (read-shell-command "$ ")))
+;;              (start-process-shell-command command nil command)))
+#+end_src
+***
+***
+
+*** 🎯 sniping windows, buffers, lines, chars
+*** avy
+#+begin_src emacs-lisp
+(setq avy-all-windows t)
+(setq avy-keys '(?n ?e ?i ?o ?m ?u ?y))
+#+end_src
+*** aw
+#+begin_src emacs-lisp
+(setq aw-keys '(?n ?e ?i ?o ?m ?u ?y))
+#+end_src
+*** evil
+#+begin_src emacs-lisp
+(setq evil-snipe-scope 'buffer)
+#+end_src
+*** TODO switch-window
+#+begin_src emacs-lisp
+(use-package! switch-window
+  :config
+  (setq switch-window-qwerty-shortcuts '("n" "e" "i" "o" "m" "u" "r"))
+  ;; (global-set-key (kbd "C-x o") 'switch-window)
+  ;; (global-set-key (kbd "C-x 1") 'switch-window-then-maximize)
+  ;; (global-set-key (kbd "C-x 2") 'switch-window-then-split-below)
+  ;; (global-set-key (kbd "C-x 3") 'switch-window-then-split-right)
+  ;; (global-set-key (kbd "C-x 0") 'switch-window-then-delete)
+
+  ;; (global-set-key (kbd "C-x 4 d") 'switch-window-then-dired)
+  ;; (global-set-key (kbd "C-x 4 f") 'switch-window-then-find-file)
+  ;; (global-set-key (kbd "C-x 4 m") 'switch-window-then-compose-mail)
+  ;; (global-set-key (kbd "C-x 4 r") 'switch-window-then-find-file-read-only)
+
+  ;; (global-set-key (kbd "C-x 4 C-f") 'switch-window-then-find-file)
+  ;; (global-set-key (kbd "C-x 4 C-o") 'switch-window-then-display-buffer)
+
+  ;; (global-set-key (kbd "C-x 4 0") 'switch-window-then-kill-buffer)
+  ;; (defvar switch-window-extra-map
+  ;;   (let ((map (make-sparse-keymap)))
+  ;;     (define-key map (kbd "i") 'switch-window-mvborder-up)
+  ;;     (define-key map (kbd "k") 'switch-window-mvborder-down)
+  ;;     (define-key map (kbd "j") 'switch-window-mvborder-left)
+  ;;     (define-key map (kbd "l") 'switch-window-mvborder-right)
+  ;;     (define-key map (kbd "b") 'balance-windows)
+  ;;     (define-key map (kbd "SPC") 'switch-window-resume-auto-resize-window)
+  ;;     map)
+  ;;   "Extra keymap for ‘switch-window’ input.
+  ;; Note: at the moment, it cannot bind commands, which will
+  ;; increase or decrease window's number, for example:
+  ;; `split-window-below' `split-window-right' `maximize'.")
+  )
+#+end_src
+*** 📜 history
+#+begin_src emacs-lisp
+#+end_src
+*** 🔎 search
+#+begin_src emacs-lisp
+#+end_src
+*** 🥐 code
+#+begin_src emacs-lisp
+(map! :g "s-t" #'lsp-describe-thing-at-point)
+(map! :g "s-d" #'lsp-goto-type-definition)
+#+end_src
+
+* ⌨ map
+#+begin_src emacs-lisp
+;;(setq-default evil-escape-key-sequence "ii")
+;;(setq-default evil-escape-delay 0.2)
+(map! :g "<XF86Launch6>"  #'+hydra/code-nav/body)
+(map! :g "<f9>"  #'+hydra/code-nav/body)
+(map! :g "<XF86TouchpadOff>"  #'+hydra/window-nav/body)
+(map! :g "<XF86TouchpadOff>"  #'+hydra/window-nav/body)
+#+end_src
+** utils
+#+begin_src emacs-lisp
+(defvar hydra-stack nil)
+
+(defun hydra-push (expr)
+  (push `(lambda () ,expr) hydra-stack))
+
+(defun hydra-pop ()
+  (interactive)
+  (let ((x (pop hydra-stack)))
+    (when x
+      (funcall x))))
+#+end_src
+* ⚙ toolchains
+** Rust
+#+begin_src emacs-lisp
+(after! rustic
+  (setq lsp-rust-server 'rust-analyzer)
+  (setq rustic-lsp-server 'rust-analyzer))
+#+end_src
+** JS
+#+begin_src emacs-lisp
+; (require 'svelte-mode)
+#+end_src
+* 🗄 organize
+** 📽 projects
+#+begin_src emacs-lisp
+(setq projectile-project-search-path '("~/Projects/"))
+#+end_src
+** 🦄 org
+#+begin_src emacs-lisp
+(after! org
+  (setq org-src-window-setup 'current-window
+        org-return-follows-link t
+        org-babel-load-languages '((emacs-lisp . t)
+                                   (python . t)
+                                   (ob-python . t)
+                                   (dot . t)
+                                   (C . t)
+                                   (R . t))
+        org-confirm-babel-evaluate nil
+        org-use-speed-commands t
+        org-catch-invisible-edits 'show
+
+
+        org-preview-latex-image-directory "/tmp/ltximg/"
+        org-structure-template-alist '(("a" . "export ascii")
+                                       ("c" . "center")
+                                       ("C" . "comment")
+                                       ("e" . "example")
+                                       ("E" . "export")
+                                       ("h" . "export html")
+                                       ("l" . "export latex")
+                                       ("q" . "quote")
+                                       ("s" . "src")
+                                       ("v" . "verse")
+                                       ("el" . "src emacs-lisp")
+                                       ("d" . "definition")
+                                       ("t" . "theorem"))))
+
+(defun efs/org-font-setup ()
+  ;; Replace list hyphen with dot
+  (font-lock-add-keywords 'org-mode
+                          '(("^ *\\([-]\\) "
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+  ;; Set faces for heading levels
+  (dolist (face '((org-level-1 . 1.2)
+                  (org-level-2 . 1.1)
+                  (org-level-3 . 1.05)
+                  (org-level-4 . 1.0)
+                  (org-level-5 . 1.1)
+                  (org-level-6 . 1.1)
+                  (org-level-7 . 1.1)
+                  (org-level-8 . 1.1))))
+  ;;    (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+
+  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+
+(use-package! org
+  ;; :hook (org-mode . efs/org-font-setup)
+  :config
+  (require 'org-habit)
+  (add-to-list 'org-modules 'org-habit)
+  (setq org-habit-graph-column 60)
+  (setq org-display-inline-images t)
+  (setq org-redisplay-inline-images t)
+  (setq org-startup-with-inline-images "inlineimages")
+  (setq org-ellipsis " ▾")
+
+  (setq org-agenda-files
+        (append '("~/org/roam/tasks.org"
+                  "~/org/roam/archive.org"
+                  "~/org/roam/habits.org"
+                  "~/org/roam/routine.org"
+                  "~/org/raom/birthdays.org")
+                (list "~/org/projects")))
+
+  (setq org-agenda-start-with-log-mode t)
+  (setq org-log-done 'time)
+  (setq org-log-into-drawer t)
+
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+          (sequence "LATER(l)" "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+
+
+  (setq org-refile-targets
+        '(("/home/marcin/org/roam/archive.org" :maxlevel . 1)
+          ("/home/marcin/org/roam/tasks.org" :maxlevel . 1)))
+
+  (advice-add 'org-refile :after 'org-save-all-org-buffers)
+  (setq org-tag-alist
+        '((:startgroup)
+                                        ; Put mutually exclusive tags here
+          (:endgroup)
+          ("@errand" . ?E)
+          ("@home" . ?H)
+          ("@work" . ?W)
+          ("agenda" . ?a)
+          ("planning" . ?p)
+          ("publish" . ?P)
+          ("batch" . ?b)
+          ("note" . ?n)
+          ("idea" . ?i)))
+
+  (setq org-agenda-custom-commands
+        '(("d" "Dashboard"
+           ((agenda "" ((org-deadline-warning-days 7)))
+            (todo "NEXT"
+                  ((org-agenda-overriding-header "Next Tasks")))
+            (todo "TODO"
+                  ((org-agenda-overriding-header "Todos")))
+            (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
+
+          ("n" "Next Tasks"
+           ((todo "NEXT"
+                  ((org-agenda-overriding-header "Next Tasks")))))
+
+          ("W" "Work Tasks" tags-todo "+work-email")
+
+          ;; Low-effort next actions
+          ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
+           ((org-agenda-overriding-header "Low Effort Tasks")
+            (org-agenda-max-todos 20)
+            (org-agenda-files org-agenda-files)))
+
+          ("w" "Workflow Status"
+           ((todo "WAIT"
+                  ((org-agenda-overriding-header "Waiting on External")
+                   (org-agenda-files org-agenda-files)))
+            (todo "REVIEW"
+                  ((org-agenda-overriding-header "In Review")
+                   (org-agenda-files org-agenda-files)))
+            (todo "PLAN"
+                  ((org-agenda-overriding-header "In Planning")
+                   (org-agenda-todo-list-sublevels nil)
+                   (org-agenda-files org-agenda-files)))
+            (todo "BACKLOG"
+                  ((org-agenda-overriding-header "Project Backlog")
+                   (org-agenda-todo-list-sublevels nil)
+                   (org-agenda-files org-agenda-files)))
+            (todo "READY"
+                  ((org-agenda-overriding-header "Ready for Work")
+                   (org-agenda-files org-agenda-files)))
+            (todo "ACTIVE"
+                  ((org-agenda-overriding-header "Active Projects")
+                   (org-agenda-files org-agenda-files)))
+            (todo "COMPLETED"
+                  ((org-agenda-overriding-header "Completed Projects")
+                   (org-agenda-files org-agenda-files)))
+            (todo "CANC"
+                  ((org-agenda-overriding-header "Cancelled Projects")
+                   (org-agenda-files org-agenda-files)))))))
+
+  (setq org-capture-templates
+        `(
+          ("d" "Development")
+          ("dh" "Habit" entry
+           (file "~/org/roam/habits.org")
+           "* TODO %?\nSCHEDULED: %<<%Y-%m-%d %a> +1d>\n:PROPERTIES:\n:STYLE:    habit\n:LAST_REPEAT: [2021-02-09 Fri 10:16]\n:END:\n:LOGBOOK:\n:END:")
+          ("ds" "Skill" entry
+           (file+headline "~/org/roam/development.org" "Skill")
+           "* TODO %?")
+          ("dc" "Career" entry
+           (file+headline "~/org/roam/development.org" "Career")
+           "* TODO %?")
+
+
+          ("f" "Friends")
+          ("fk" "Kuba" entry
+           (file+headline "~/org/roam/friends.org" "Kuba")
+           "* TODO %?")
+          ("fn" "Norbert" entry
+           (file+headline "~/org/roam/friends.org" "Norbert")
+           "* TODO %?")
+          ("fo" "Ola" entry
+           (file+headline "~/org/roam/friends.org" "Ola")
+           "* TODO %?")
+
+          ("j" "Journaling" text (function org-roam-dailies-find-today ))
+
+          ("l" "Languages and Computer Science")
+          ("la" "Algorithms and Data Structures" entry
+           (file+headline "~/org/roam/20201106041342-algorithms.org" "Inbox")
+           "* %?")
+          ("ls" "Computer Science" entry
+           (file "~/org/roam/20201117110134-computer_science.org")
+           "* %?")
+          ("lr" "Rust" entry
+           (file+headline "~/org/roam/20210103082401-rust.org" "Inbox")
+           "* %?")
+          ("lp" "Python" entry
+           (file+headline "~/org/roam/20201213191218-python.org" "Inbox")
+           "* %?")
+          ("lj" "JavaScript & TypeScript" entry
+           (file+headline "~/org/roam/20210219161112-javascript.org" "Inbox")
+           "* %?")
+          ("ll" "Emacs Lisp" entry
+           (file+headline "~/org/roam/20210219161147-emacs_lisp.org" "Inbox")
+           "* %?")
+          ("ld" "Dart" entry
+           (file+headline "~/org/roam/20210219161250-dart_flutter.org" "Inbox")
+           "* %?")
+
+          ("m" "Metrics Capture")
+          ("mw" "Weight" table-line (file+headline "~/org/roam/metrics.org" "Weight")
+           "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)
+          ("me" "Checking Email" entry (file+olp+datetree "~/org/roam/metrics.org")
+           "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+          ("mc" "Cooking" entry (file+olp+datetree "~/org/roam/metrics.org")
+           "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+          ("ms" "Shopping" entry (file+olp+datetree "~/org/roam/metrics.org")
+           "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+          ("mt" "Cleaning" entry (file+olp+datetree "~/org/roam/metrics.org")
+           "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+          ("mr" "Ricing" entry (file+olp+datetree "~/org/roam/metrics.org")
+           "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+
+          ("o" "Link capture" entry
+           (file+headline "~/org/roam/bookmarks.org" "INBOX")
+           "* %a %U"
+           :immediate-finish t)
+
+          ("p" "Projects")
+          ("pn" "Neal")
+          ("pni" "Idea" entry (file+headline "~/org/projects/SDS.org" "Ideas"))
+          ("pnm" "Meeting" entry (file+headline "~/org/projects/SDS.org" "Meetings")
+           "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
+           :clock-in :clock-resume
+           :empty-lines 1)
+          ("pnt" "Task" entry (file+headline "~/org/projects/SDS.org" "Tasks")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+          ("pj" "Jacob")
+          ("pji" "Idea" entry (file+headline "~/org/projects/Jacob.org" "Ideas"))
+          ("pjm" "Meeting" entry (file+headline "~/org/projects/Jacob.org" "Meetings")
+           "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
+           :clock-in :clock-resume
+           :empty-lines 1)
+          ("pjt" "Task" entry (file+headline "~/org/projects/Jacob.org" "Tasks")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+
+          ("t" "Tasks / Projects")
+          ("tt" "Task" entry (file+olp "~/org/roam/tasks.org" "Inbox")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+          ("tp" "Taxes and Law" entry (file+olp "~/org/roam/tasks.org" "Biurokcja")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+
+          ("v" "Voice")
+          ("vr" "start recording" nil (file+function "~/org/roam/voice.org" (lambda () (interactive) (call-process-shell-command "audio-recorder -c start && audio-recorder -c hide" nil 0)))
+           "* new recording %U %a"           )
+          ("vs" "stop recording" nil (function (lambda () (interactive) (call-process-shell-command "audio-recorder -c stop && audio-recorder -c quit" nil 0))))
+          ("va" "show app" nil (function (lambda () (interactive) (call-process-shell-command "audio-recorder -c show" nil 0))))
+          ("vt" "hide app" nil (function (lambda () (interactive) (call-process-shell-command "audio-recorder -c hide" nil 0))))
+
+          ("w" "Workflow")
+          ("wa" "Apps Improvement" entry (file+olp "~/org/roam/workflow.org" "Apps")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+          ("wc" "Capture Improvement" entry (file+olp "~/org/roam/workflow.org" "Capture")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+          ("wf" "Functional Improvement" entry (file+olp "~/org/roam/workflow.org" "Functional")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+          ("wi" "Idea" entry (file+olp "~/org/roam/workflow.org" "Inbox")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+          ("wm" "MouseKiller" entry (file+olp "~/org/roam/workflow.org" "Mouse")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+          ("wv" "Visual Improvement" entry (file+olp "~/org/roam/workflow.org" "Visual")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+          ))
+
+
+  (define-key global-map (kbd "C-c j")
+    (lambda () (interactive) (org-capture nil "jj")))
+
+  (efs/org-font-setup))
+
+
+(setq org-roam-dailies-capture-templates
+      '(("l" "lab" entry
+         #'org-roam-capture--get-point
+         :file-name "daily/%<%Y-%m-%d>"
+         :head "[[/home/marcin/Pictures/emacs/org_covers/miami_sunset.png]]\n#+title: %<%Y-%m-%d>\n#+subtitle:%^{title}\n#+created_at: %<%H:%M>\n\n* Dreams\n** \n* Journal\n** \n* Plan\n** \n\n* Motivation\n* Gratitude\n** \n* Summary\n** \n* Stats"
+         :olp ("Journal")
+         :immediate-finish t
+         )))
+
+(setq org-html-validation-link nil)  ;; removes validation link from exported html file
+(require 'org-protocol)
+(setq org-protocol-default-template-key "o")
+
+(setq deft-directory "~/org"
+      deft-extensions '("txt" "org")
+      deft-recursive t)
+#+end_src
+** 🧠 org-roam
+#+begin_src emacs-lisp
+(use-package! org-roam-server
+  :config
+  (setq org-roam-server-host "127.0.0.1"
+        org-roam-server-port 8080
+        org-roam-server-authenticate nil
+        org-roam-server-export-inline-images t
+        org-roam-server-serve-files nil
+        org-roam-server-served-file-extensions '("pdf" "mp4" "ogv")
+        org-roam-server-network-poll t
+        org-roam-server-network-arrows nil
+        org-roam-server-network-label-truncate t
+        org-roam-server-network-label-truncate-length 60
+        org-roam-server-network-label-wrap-length 20))
+
+(use-package! org-roam
+  :config
+  (setq org-directory "~/org/")
+  (setq org-roam-dailies-directory "daily/")
+
+  (setq org-roam-graph-executable "/usr/bin/dot")
+  (setq org-roam-graph-viewer "/usr/bin/firefox")
+  )
+
+(defun org-roam-server-open ()
+  "Ensure the server is active, then open the roam graph."
+  (interactive)
+  (smartparens-global-mode -1)
+  (org-roam-server-mode 1)
+  (browse-url-xdg-open (format "http://localhost:%d" org-roam-server-port))
+  (smartparens-global-mode 1))
+
+;; automatically enable server-mode
+(after! org-roam
+  (smartparens-global-mode -1)
+  (org-roam-server-mode)
+  (smartparens-global-mode 1))
+#+end_src
+
+* 📦 app
+** shortcuts
+all windows spawn inside currently selected buffer
+#+begin_src emacs-lisp
+(defhydra +hydra/app-launcher (:hint nil :exit t)
+  "
+  Anything: _r_un nything
+     Stack: _s_:buffers browsers _f_iles
+     Tools: _t_erminal _a_:browser _B_igger browser
+     Files: current folder project folder
+       PKS:
+     Feeds: _m_ail _y_ss _h_ackernews _Y_eddit _4_chan
+       Fun: _y_outube _w_aking up _m_spotify _M_soundcloud
+
+"
+  ("t" vterm)
+  ("a" (lambda () (interactive) (start-process-shell-command "qutebrowser" nil "qutebrowser")))
+  ("B" (lambda () (interactive) (start-process-shell-command "chromium" nil "chromium")))
+  ("y" (lambda () (interactive) (start-process-shell-command "youtube" nil "qutebrowser youtube.com")))
+  ("4" (lambda () (interactive) (start-process-shell-command "4chan" nil "qutebrowser 4chan.org")))
+  ("h" (lambda () (interactive) (start-process-shell-command "HN" nil "qutebrowser news.ycombinator.com")))
+  ("y" (lambda () (interactive) (start-process-shell-command "reddit" nil "qutebrowser reddit.com")))
+  ("m" =mu4e)
+  ("Y" elfeed)
+  ("w" (lambda () (interactive) (start-process-shell-command "reddit" nil "qutebrowser https://app.wakingup.com/")))
+  ("m" (lambda () (interactive) (start-process-shell-command "spotify" nil "/usr/bin/spotify")))
+  ("M" soundklaus-my-favorites)
+  ("s" switch-to-buffer)
+  ("f" find-file)
+  ("F" (lambda () (interactive) (start-process-shell-command "dolphin" nil "dolphin")))
+  ("r" (lambda (command)
+         (interactive (list (read-shell-command "$ ")))
+         (start-process-shell-command command nil command)))
+  ("q" nil)
+  )
+#+end_src
+** 📧 mail
+#+begin_src emacs-lisp
+
+(use-package! mu4e
+  ;; :load-path "/usr/share/emacs/site-lisp/mu4e/"
+  ;; :defer 20 ; Wait until 20 seconds after startup
+  :config
+
+  ;; This is set to 't' to avoid mail syncing issues when using mbsync
+  (setq mu4e-change-filenames-when-moving t)
+
+  ;; Refresh mail using isync every 10 minutes
+  (setq mu4e-update-interval (* 10 60))
+  (setq mu4e-get-mail-command "mbsync -a")
+  (setq mu4e-maildir "~/Mail")
+
+  (setq mu4e-drafts-folder "/[Gmail]/Drafts")
+  (setq mu4e-sent-folder   "/[Gmail]/Sent Mail")
+  (setq mu4e-refile-folder "/[Gmail]/All Mail")
+  (setq mu4e-trash-folder  "/[Gmail]/Kosz")
+  (setq mu4e-bookmarks
+        '((:name "Unread messages" :query "flag:unread AND NOT flag:trashed" :key ?i)
+          (:name "Today's messages" :query "date:today..now" :key ?t)
+          (:name "The Boss" :query "from:stallman" :key ?s)
+          (:name "Last 7 days" :query "date:7d..now" :hide-unread t :key ?w)
+          (:name "Messages with images" :query "mime:image/*" :key ?p)))
+  (setq mu4e-maildir-shortcuts
+        '((:maildir "/Inbox"    :key ?i)
+          (:maildir "/[Gmail]/Sent Mail" :key ?s)
+          (:maildir "/[Gmail]/Trash"     :key ?t)
+          (:maildir "/[Gmail]/Drafts"    :key ?d)
+          (:maildir "/[Gmail]/All Mail"  :key ?a)))
+  (setq smtpmail-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-service 465
+        smtpmail-stream-type  'ssl)
+  (setq message-send-mail-function 'smtpmail-send-it)
+  (setq mu4e-compose-signature "Marcin"))
+#+end_src
+
+** leetcode
+#+begin_src emacs-lisp
+(use-package! leetcode
+  :config
+  (setq leetcode-prefer-language "python3")
+  (setq leetcode-prefer-sql "mysql")
+  (setq leetcode-save-solutions t)
+  (setq leetcode-directory "~/Code/algorithms_and_data_structures/leetcode"))
+#+end_src
+** 🔐 lastpass
+#+begin_src emacs-lisp
+;; (use-package! lastpass
+;;   :config
+;;   :after (exwm xelb)
+;;   (setq lastpass-user "m.liebiediew@gmail.com")
+;;   (setq lastpass-trust-login t)
+;;   (lastpass-auth-source-enable))
+#+end_src
+** 🔊 emms
+#+begin_src emacs-lisp
+(use-package! emms
+  :config
+  (require 'emms-setup)
+  (emms-standard)
+  (emms-default-players)
+  )
+#+end_src
+** 🌤 soundcloud
+#+begin_src emacs-lisp
+(use-package! soundklaus
+  :commands
+  (soundklaus-activities
+   soundklaus-connect
+   soundklaus-my-favorites
+   soundklaus-my-playlists
+   soundklaus-my-tracks
+   soundklaus-playlists
+   soundklaus-tracks))
+#+end_src
