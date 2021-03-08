@@ -466,6 +466,11 @@
 #+end_src
 ** 🦄 org
 #+begin_src emacs-lisp
+(defun dw/read-file-as-string (path)
+  (with-temp-buffer
+    (insert-file-contents path)
+    (buffer-string)))
+
 (after! org
   (setq org-src-window-setup 'current-window
         org-return-follows-link t
@@ -711,7 +716,7 @@
            "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
 
           ("v" "Voice")
-          ("vr" "start recording" nil (file+function "~/org/roam/voice.org" (lambda () (interactive) (call-process-shell-command "audio-recorder -c start && audio-recorder -c hide" nil 0)))
+          ("vr" "start recording" nil (file+function "~/org/roam/voice/.org" (lambda () (interactive) (call-process-shell-command "audio-recorder -c start && audio-recorder -c hide" nil 0)))
            "* new recording %U %a"           )
           ("vs" "stop recording" nil (function (lambda () (interactive) (call-process-shell-command "audio-recorder -c stop && audio-recorder -c quit" nil 0))))
           ("va" "show app" nil (function (lambda () (interactive) (call-process-shell-command "audio-recorder -c show" nil 0))))
@@ -739,14 +744,6 @@
   (efs/org-font-setup))
 
 
-(setq org-roam-dailies-capture-templates
-      '(("l" "lab" entry
-         #'org-roam-capture--get-point
-         :file-name "daily/%<%Y-%m-%d>"
-         :head "[[/home/marcin/Pictures/emacs/org_covers/miami_sunset.png]]\n#+title: %<%Y-%m-%d>\n#+subtitle:%^{title}\n#+created_at: %<%H:%M>\n\n* Dreams\n** \n* Journal\n** \n* Plan\n** \n\n* Motivation\n* Gratitude\n** \n* Summary\n** \n* Stats"
-         :olp ("Journal")
-         :immediate-finish t
-         )))
 
 (setq org-html-validation-link nil)  ;; removes validation link from exported html file
 (require 'org-protocol)
@@ -776,9 +773,17 @@
   :config
   (setq org-directory "~/org/")
   (setq org-roam-dailies-directory "daily/")
-
+  (setq org-roam-tag-sources '(prop all-directories))
   (setq org-roam-graph-executable "/usr/bin/dot")
   (setq org-roam-graph-viewer "/usr/bin/firefox")
+  (setq org-roam-dailies-capture-templates
+        `(("l" "lab" entry
+           #'org-roam-capture--get-point
+           :file-name "daily/%<%Y-%m-%d>"
+           :head ,(dw/read-file-as-string "~/org/templates/journal.org")
+           :olp ("Journal")
+           :immediate-finish t
+           )))
   )
 
 (defun org-roam-server-open ()
