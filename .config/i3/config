@@ -62,7 +62,7 @@ bindsym $windows+$alt+e exec "rofimoji -s neutral --rofi-args \\" -color-window 
 bindsym $windows+$alt+d exec "python ~/.config/scripts/grab_i3_floating.py --app spotify"
 # BROWSERS
 # bindsym $windows+$alt+b exec --no-startup-id qutebrowser
-bindsym $windows+$alt+b exec --no-startup-id librewolf 
+bindsym $windows+$alt+b exec --no-startup-id vivaldi-stable 
 # bindsym $windows+$alt+c exec --no-startup-id brave
 bindsym $windows+$alt+c exec --no-startup-id chromium
 # TERMINAL
