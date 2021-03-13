@@ -19,15 +19,15 @@
             flavor = "tap-preferred";
             bindings = <&kp>, <&kp>;
         };
-        sf: shift_mods {
-            compatible = "zmk,behavior-hold-tap";
-            label = "SHIFT_MODS";
-            #binding-cells = <2>;
-            tapping-term-ms = <200>;
-            quick-tap-ms = <0>;
-            flavor = "hold-preferred";
-            bindings = <&kp>, <&kp>;
-        };
+        // sf: shift_mods {
+        //     compatible = "zmk,behavior-hold-tap";
+        //     label = "SHIFT_MODS";
+        //     #binding-cells = <2>;
+        //     tapping-term-ms = <200>;
+        //     quick-tap-ms = <0>;
+        //     flavor = "hold-preferred";
+        //     bindings = <&kp>, <&kp>;
+        // };
     };
 
     combos {
@@ -36,11 +36,11 @@
 //             28               29                  30               31            32           33           34           35                36               37               38              39               40               41
 //             42               43                  44               45            46           47           48           49                50               51               52              53               54               55
         compatible = "zmk,combos";
-        combo_esc {
-            timeout-ms = <9>;
-            key-positions = <37 38>;
-            bindings = <&kp ESCAPE>;
-        };
+        // combo_esc {
+        //     timeout-ms = <9>;
+        //     key-positions = <37 38>;
+        //     bindings = <&kp ESCAPE>;
+        // };
 // NUMBERS
         combo_n1 {
             timeout-ms = <60>;
@@ -156,10 +156,10 @@
         default_layer {
             bindings = <
                &kp K_MUTE       &kp GRAVE           &kp N1           &kp N2        &kp N3       &kp N4       &kp N5       &kp N6            &kp N7           &kp N8           &kp N9          &kp N0           &kp F10          &kp F11
-               &kp K_COPY       &kp LC(BSPC)        &kp Q            &kp W         &kp E        &kp R        &kp T        &kp Y             &kp U            &kp I            &kp O           &kp P            &kp LBKT         &kp RBKT
+               &kp K_COPY       &kp ESCAPE          &kp Q            &kp W         &kp E        &kp R        &kp T        &kp Y             &kp U            &kp I            &kp O           &kp P            &kp LBKT         &kp RBKT
                &kp K_CUT        &kp BSPC            &hm LCTRL A      &hm LGUI S    &hm LALT D   &hm LSHFT F  &kp G        &kp H             &hm RSHFT J      &hm RALT K       &hm RGUI L      &hm RCTRL SEMI   &kp SQT          &kp PIPE
                &kp K_PASTE      &kp DELETE          &hm LCTRL Z      &hm LGUI X    &kp C        &kp V        &kp B        &kp N             &kp M            &kp COMMA        &kp DOT         &kp SLASH        &kp BSLH         &tog NUMSYL
-               &kp F1           &sf LSHFT ENTER     &mt LALT TAB     &kp F21       &kp F22      &kp F2       &kp RALT     &kp F13           &kp F14          &kp MINUS        &kp EQUAL       &lt NUMSYL F23   &lt NAVI SPACE   &kp F9
+               &kp F1           &mt LSHFT ENTER     &mt LALT TAB     &kp F21       &kp F22      &kp F2       &kp RALT     &kp F13           &kp F14          &kp MINUS        &kp EQUAL       &lt NUMSYL F23   &lt NAVI SPACE   &kp F9
             >;
 			sensor-bindings = <&inc_dec_kp UP DOWN &inc_dec_kp F15 F16>;
         };
