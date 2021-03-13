@@ -543,7 +543,7 @@
                   "~/org/roam/habits.org"
                   "~/org/roam/routine.org"
                   "~/org/raom/birthdays.org")
-                (list "~/org/projects")))
+                (list "~/org/roam/personal/agenda")))
 
   (setq org-agenda-start-with-log-mode t)
   (setq org-log-done 'time)
@@ -551,7 +551,7 @@
 
   (setq org-todo-keywords
         '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-          (sequence "LATER(l)" "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+          (sequence "LATER(l)" "BACKLOG(b)" "PLAN(p)" "WORKFLOW(W)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
 
 
   (setq org-refile-targets
@@ -769,21 +769,34 @@
         org-roam-server-network-label-truncate-length 60
         org-roam-server-network-label-wrap-length 20))
 
+
+
 (use-package! org-roam
   :config
   (setq org-directory "~/org/")
-  (setq org-roam-dailies-directory "daily/")
+  (setq org-roam-dailies-directory "personal/daily/")
   (setq org-roam-tag-sources '(prop all-directories))
   (setq org-roam-graph-executable "/usr/bin/dot")
   (setq org-roam-graph-viewer "/usr/bin/firefox")
+  (setq org-roam-prefer-id-links t)
   (setq org-roam-dailies-capture-templates
         `(("l" "lab" entry
            #'org-roam-capture--get-point
-           :file-name "daily/%<%Y-%m-%d>"
+           :file-name "personal/daily/%<%Y-%m-%d>"
            :head ,(dw/read-file-as-string "~/org/templates/journal.org")
            :olp ("Journal")
            :immediate-finish t
            )))
+  (add-hook!
+   'org-roam-capture-after-find-file-hook
+   (lambda ()
+     (org-id-get-create)
+     (save-buffer)
+     (org-roam-db-update)))
+  (advice-add
+   #'org-roam-link--replace-link-on-save
+   :after
+   #'my/replace-file-with-id-link)
   )
 
 (defun org-roam-server-open ()
@@ -799,6 +812,38 @@
   (smartparens-global-mode -1)
   (org-roam-server-mode)
   (smartparens-global-mode 1))
+#+end_src
+** V1 -> V2 migration
+#+begin_src emacs-lisp
+ (defun my/replace-file-with-id-link ()
+   "Replaces file links with ID links where possible in current buffer."
+   (interactive)
+   (let (path desc)
+     (org-with-point-at 1
+       (while (re-search-forward org-link-bracket-re nil t)
+         (setq desc (match-string 2))
+         (when-let ((link (save-match-data (org-element-lineage (org-element-context) '(link) t))))
+           (when (string-equal "file" (org-element-property :type link))
+             (setq path (expand-file-name (org-element-property :path link)))
+             (replace-match "")
+             (insert (org-roam-format-link path desc))))))))
+
+ ;; (dolist (file (org-roam--list-all-files))
+ ;;   (with-current-buffer (or (find-buffer-visiting file)
+ ;;                            (find-file-noselect file))
+ ;;     (org-with-point-at 1
+ ;;       (org-id-get-create))
+ ;;     (save-buffer)))
+
+ ;; (org-roam-db-build-cache)
+
+ ;; (dolist (file (org-roam--list-all-files))
+ ;;   (with-current-buffer (or (find-buffer-visiting file)
+ ;;                            (find-file-noselect file))
+ ;;     (my/replace-file-with-id-link)
+ ;;     (save-buffer)))
+
+ ;; (org-roam-db-build-cache)
 #+end_src
 
 * 📦 app
