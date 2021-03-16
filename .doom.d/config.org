@@ -538,12 +538,16 @@
   (setq org-ellipsis " ▾")
 
   (setq org-agenda-files
-        (append '("~/org/roam/tasks.org"
-                  "~/org/roam/archive.org"
-                  "~/org/roam/habits.org"
-                  "~/org/roam/routine.org"
-                  "~/org/raom/birthdays.org")
-                (list "~/org/roam/personal/agenda")))
+        (append
+         ;; '("~/org/roam/tasks.org"
+         ;;          "~/org/roam/archive.org"
+         ;;          "~/org/roam/habits.org"
+         ;;          "~/org/roam/routine.org"
+         ;;          "~/org/raom/birthdays.org")
+         (list "~/org/roam/personal/plan")
+         (list "~/org/roam/personal/people")
+         (list "~/org/roam/personal/daily")
+         ))
 
   (setq org-agenda-start-with-log-mode t)
   (setq org-log-done 'time)
@@ -812,6 +816,16 @@
   (smartparens-global-mode -1)
   (org-roam-server-mode)
   (smartparens-global-mode 1))
+#+end_src
+** table of contents
+#+begin_src emacs-lisp
+(if (require 'toc-org nil t)
+    (add-hook 'org-mode-hook 'toc-org-mode)
+
+  ;; enable in markdown, too
+  (add-hook 'markdown-mode-hook 'toc-org-mode)
+  (define-key markdown-mode-map (kbd "\C-c\C-o") 'toc-org-markdown-follow-thing-at-point))
+(warn "toc-org not found"))
 #+end_src
 ** V1 -> V2 migration
 #+begin_src emacs-lisp

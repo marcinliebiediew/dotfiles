@@ -19,6 +19,7 @@
 ;(package! spotify)
 ;(package! which-key-posframe)
 (package! org-roam-server)
+(package! toc-org)
 ;;(package! eaf=
 ; (package! ctable)
 ; (package! deferred)
