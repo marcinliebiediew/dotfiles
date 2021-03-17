@@ -85,3 +85,9 @@ key_bindings:
   - { key: Subtract, mods: Control, action: DecreaseFontSize }
   - { key: Minus, mods: Control, action: DecreaseFontSize }
   - { key: N, mods: Control, action: SpawnNewInstance }
+
+
+cursor:
+  style:
+    blinking: Always
+    blink_interval: 500
