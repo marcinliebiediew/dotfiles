@@ -1,3 +1,3 @@
 function gg
-googler
+cd ~/org/roam
 end
