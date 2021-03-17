@@ -1,0 +1,94 @@
+icons = "awesome"
+scrolling = "natural"
+[theme]
+name = "plain"
+[theme.overrides]
+idle_bg = "#000000"
+idle_fg = "#ffffff"
+separator_fg = "#000000"
+separator_bg = "#000000"
+
+# [[block]]
+# block = "music"
+# buttons = ["prev", "play", "next"]
+# on_collapsed_click= "spotify"
+# marquee_interval = 3
+# marquee_speed = 0.1
+
+
+#[[block]]
+#block = "uptime"
+#[[block]]
+#block = "custom"
+#command = '''fish -c tracker_reminder'''
+
+# [[block]]
+# block = "pomodoro"
+# length = 25
+# break_lenght = 5
+# message = "Take a break!"
+# break_message = "Back to work!"
+# use_nag = true
+# nag_path = "i3-nagbar"
+
+[[block]]
+block = "custom"
+command = '''python -c "import arrow;n=arrow.now();v=round((n.ceil('week')-n).total_seconds()/60/60);print(f'{v-8*(v//24)}h')"'''
+interval = 1
+
+[[block]]
+block = "temperature"
+collapsed = true
+interval = 1
+format = "{min}° min, {max}° max, {average}° avg"
+chip = "*-isa-*"
+
+[[block]]
+block = "cpu"
+interval = 1
+format = "{barchart} {utilization}% {frequency}GHz"
+
+[[block]]
+block = "memory"
+display_type = "memory"
+format_mem = "{MUm}Mb"
+format_swap = "{SUp}%"
+
+[[block]]
+block = "disk_space"
+info_type = "available"
+unit = "TB"
+interval = 2000
+
+
+
+# [[block]]
+# block = "docker"
+# interval = 20
+# format = "{running}/{total}"
+
+
+[[block]]
+block = "sound"
+
+[[block]]
+block = "battery"
+interval = 1 
+format = "{percentage}% {time} {power}"
+
+[[block]]
+block = "time"
+interval = 60
+format = "%a %d %R"
+
+[[block]]
+block = "net"
+device = "wlp0s20f3"
+speed_down = false
+speed_up = false
+interval = 1
+#ssid = true
+#signal_strength = true
+#ip = true
+#graph_up = true
+
