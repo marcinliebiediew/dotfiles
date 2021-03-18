@@ -32,19 +32,19 @@
 ** 🐕 help windows
 *** ivy-posframe
 #+begin_src emacs-lisp
-(use-package! ivy-posframe
-  :config
-  (ivy-posframe-mode 1)
-  (setq ivy-posframe-display-functions-alist
-        '((swiper          . ivy-posframe-display-at-point)
-          (complete-symbol . ivy-posframe-display-at-point)
-          (counsel-M-x     . ivy-posframe-display-at-point)
-          (t               . ivy-posframe-display)))
+;; (use-package! ivy-posframe
+;;   :config
+;;   (ivy-posframe-mode 1)
+;;   (setq ivy-posframe-display-functions-alist
+;;         '((swiper          . ivy-posframe-display-at-point)
+;;           (complete-symbol . ivy-posframe-display-at-point)
+;;           (counsel-M-x     . ivy-posframe-display-at-point)
+;;           (t               . ivy-posframe-display)))
 
-  ;; (setq ivy-posframe-parameters '((parent-frame . nil)
-  ;;                                 (left-fringe . 8)
-  ;;                                 (right-fringe . 8)))
-  )
+;;   ;; (setq ivy-posframe-parameters '((parent-frame . nil)
+;;   ;;                                 (left-fringe . 8)
+;;   ;;                                 (right-fringe . 8)))
+;;   )
 #+end_src
 *** which-key-posframe
 #+begin_src emacs-lisp
@@ -60,11 +60,11 @@
 #+end_src
 *** hydra-posframe
 #+begin_src emacs-lisp
-(use-package! hydra
-  :config
-  (setq hydra-hint-display-type 'posframe)
-;;  (setq hydra-posframe-show-params )
-  )
+;; (use-package! hydra
+;;   :config
+;;   (setq hydra-hint-display-type 'posframe)
+;; ;;  (setq hydra-posframe-show-params )
+;;   )
 #+end_src
 *** code completion and docs
 #+begin_src emacs-lisp
@@ -429,6 +429,8 @@
                   ((org-agenda-overriding-header "Next Tasks")))
             (todo "TODO"
                   ((org-agenda-overriding-header "Todos")))
+            (todo "FOCUS"
+                  ((org-agenda-overriding-header "What's on the table")))
             (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
 
           ("n" "Next Tasks"
@@ -482,18 +484,6 @@
            "* TODO %?")
           ("dc" "Career" entry
            (file+headline "~/org/roam/development.org" "Career")
-           "* TODO %?")
-
-
-          ("f" "Friends")
-          ("fk" "Kuba" entry
-           (file+headline "~/org/roam/friends.org" "Kuba")
-           "* TODO %?")
-          ("fn" "Norbert" entry
-           (file+headline "~/org/roam/friends.org" "Norbert")
-           "* TODO %?")
-          ("fo" "Ola" entry
-           (file+headline "~/org/roam/friends.org" "Ola")
            "* TODO %?")
 
           ("j" "Journaling" text (function org-roam-dailies-find-today ))
@@ -714,75 +704,75 @@
 ** shortcuts
 all windows spawn inside currently selected buffer
 #+begin_src emacs-lisp
-(defhydra +hydra/app-launcher (:hint nil :exit t)
-  "
-  Anything: _r_un nything
-     Stack: _s_:buffers browsers _f_iles
-     Tools: _t_erminal _a_:browser _B_igger browser
-     Files: current folder project folder
-       PKS:
-     Feeds: _m_ail _y_ss _h_ackernews _Y_eddit _4_chan
-       Fun: _y_outube _w_aking up _m_spotify _M_soundcloud
+;; (defhydra +hydra/app-launcher (:hint nil :exit t)
+;;   "
+;;   Anything: _r_un nything
+;;      Stack: _s_:buffers browsers _f_iles
+;;      Tools: _t_erminal _a_:browser _B_igger browser
+;;      Files: current folder project folder
+;;        PKS:
+;;      Feeds: _m_ail _y_ss _h_ackernews _Y_eddit _4_chan
+;;        Fun: _y_outube _w_aking up _m_spotify _M_soundcloud
 
-"
-  ("t" vterm)
-  ("a" (lambda () (interactive) (start-process-shell-command "qutebrowser" nil "qutebrowser")))
-  ("B" (lambda () (interactive) (start-process-shell-command "chromium" nil "chromium")))
-  ("y" (lambda () (interactive) (start-process-shell-command "youtube" nil "qutebrowser youtube.com")))
-  ("4" (lambda () (interactive) (start-process-shell-command "4chan" nil "qutebrowser 4chan.org")))
-  ("h" (lambda () (interactive) (start-process-shell-command "HN" nil "qutebrowser news.ycombinator.com")))
-  ("y" (lambda () (interactive) (start-process-shell-command "reddit" nil "qutebrowser reddit.com")))
-  ("m" =mu4e)
-  ("Y" elfeed)
-  ("w" (lambda () (interactive) (start-process-shell-command "reddit" nil "qutebrowser https://app.wakingup.com/")))
-  ("m" (lambda () (interactive) (start-process-shell-command "spotify" nil "/usr/bin/spotify")))
-  ("M" soundklaus-my-favorites)
-  ("s" switch-to-buffer)
-  ("f" find-file)
-  ("F" (lambda () (interactive) (start-process-shell-command "dolphin" nil "dolphin")))
-  ("r" (lambda (command)
-         (interactive (list (read-shell-command "$ ")))
-         (start-process-shell-command command nil command)))
-  ("q" nil)
-  )
+;; "
+;;   ("t" vterm)
+;;   ("a" (lambda () (interactive) (start-process-shell-command "qutebrowser" nil "qutebrowser")))
+;;   ("B" (lambda () (interactive) (start-process-shell-command "chromium" nil "chromium")))
+;;   ("y" (lambda () (interactive) (start-process-shell-command "youtube" nil "qutebrowser youtube.com")))
+;;   ("4" (lambda () (interactive) (start-process-shell-command "4chan" nil "qutebrowser 4chan.org")))
+;;   ("h" (lambda () (interactive) (start-process-shell-command "HN" nil "qutebrowser news.ycombinator.com")))
+;;   ("y" (lambda () (interactive) (start-process-shell-command "reddit" nil "qutebrowser reddit.com")))
+;;   ("m" =mu4e)
+;;   ("Y" elfeed)
+;;   ("w" (lambda () (interactive) (start-process-shell-command "reddit" nil "qutebrowser https://app.wakingup.com/")))
+;;   ("m" (lambda () (interactive) (start-process-shell-command "spotify" nil "/usr/bin/spotify")))
+;;   ("M" soundklaus-my-favorites)
+;;   ("s" switch-to-buffer)
+;;   ("f" find-file)
+;;   ("F" (lambda () (interactive) (start-process-shell-command "dolphin" nil "dolphin")))
+;;   ("r" (lambda (command)
+;;          (interactive (list (read-shell-command "$ ")))
+;;          (start-process-shell-command command nil command)))
+;;   ("q" nil)
+;;   )
 #+end_src
 ** 📧 mail
 #+begin_src emacs-lisp
 
-(use-package! mu4e
-  ;; :load-path "/usr/share/emacs/site-lisp/mu4e/"
-  ;; :defer 20 ; Wait until 20 seconds after startup
-  :config
+;; (use-package! mu4e
+;;   ;; :load-path "/usr/share/emacs/site-lisp/mu4e/"
+;;   ;; :defer 20 ; Wait until 20 seconds after startup
+;;   :config
 
-  ;; This is set to 't' to avoid mail syncing issues when using mbsync
-  (setq mu4e-change-filenames-when-moving t)
+;;   ;; This is set to 't' to avoid mail syncing issues when using mbsync
+;;   (setq mu4e-change-filenames-when-moving t)
 
-  ;; Refresh mail using isync every 10 minutes
-  (setq mu4e-update-interval (* 10 60))
-  (setq mu4e-get-mail-command "mbsync -a")
-  (setq mu4e-maildir "~/Mail")
+;;   ;; Refresh mail using isync every 10 minutes
+;;   (setq mu4e-update-interval (* 10 60))
+;;   (setq mu4e-get-mail-command "mbsync -a")
+;;   (setq mu4e-maildir "~/Mail")
 
-  (setq mu4e-drafts-folder "/[Gmail]/Drafts")
-  (setq mu4e-sent-folder   "/[Gmail]/Sent Mail")
-  (setq mu4e-refile-folder "/[Gmail]/All Mail")
-  (setq mu4e-trash-folder  "/[Gmail]/Kosz")
-  (setq mu4e-bookmarks
-        '((:name "Unread messages" :query "flag:unread AND NOT flag:trashed" :key ?i)
-          (:name "Today's messages" :query "date:today..now" :key ?t)
-          (:name "The Boss" :query "from:stallman" :key ?s)
-          (:name "Last 7 days" :query "date:7d..now" :hide-unread t :key ?w)
-          (:name "Messages with images" :query "mime:image/*" :key ?p)))
-  (setq mu4e-maildir-shortcuts
-        '((:maildir "/Inbox"    :key ?i)
-          (:maildir "/[Gmail]/Sent Mail" :key ?s)
-          (:maildir "/[Gmail]/Trash"     :key ?t)
-          (:maildir "/[Gmail]/Drafts"    :key ?d)
-          (:maildir "/[Gmail]/All Mail"  :key ?a)))
-  (setq smtpmail-smtp-server "smtp.gmail.com"
-        smtpmail-smtp-service 465
-        smtpmail-stream-type  'ssl)
-  (setq message-send-mail-function 'smtpmail-send-it)
-  (setq mu4e-compose-signature "Marcin"))
+;;   (setq mu4e-drafts-folder "/[Gmail]/Drafts")
+;;   (setq mu4e-sent-folder   "/[Gmail]/Sent Mail")
+;;   (setq mu4e-refile-folder "/[Gmail]/All Mail")
+;;   (setq mu4e-trash-folder  "/[Gmail]/Kosz")
+;;   (setq mu4e-bookmarks
+;;         '((:name "Unread messages" :query "flag:unread AND NOT flag:trashed" :key ?i)
+;;           (:name "Today's messages" :query "date:today..now" :key ?t)
+;;           (:name "The Boss" :query "from:stallman" :key ?s)
+;;           (:name "Last 7 days" :query "date:7d..now" :hide-unread t :key ?w)
+;;           (:name "Messages with images" :query "mime:image/*" :key ?p)))
+;;   (setq mu4e-maildir-shortcuts
+;;         '((:maildir "/Inbox"    :key ?i)
+;;           (:maildir "/[Gmail]/Sent Mail" :key ?s)
+;;           (:maildir "/[Gmail]/Trash"     :key ?t)
+;;           (:maildir "/[Gmail]/Drafts"    :key ?d)
+;;           (:maildir "/[Gmail]/All Mail"  :key ?a)))
+;;   (setq smtpmail-smtp-server "smtp.gmail.com"
+;;         smtpmail-smtp-service 465
+;;         smtpmail-stream-type  'ssl)
+;;   (setq message-send-mail-function 'smtpmail-send-it)
+;;   (setq mu4e-compose-signature "Marcin"))
 #+end_src
 
 ** leetcode
