@@ -311,10 +311,45 @@
 #+end_src
 ** 🦄 org
 #+begin_src emacs-lisp
+(defun efs/org-font-setup ()
+  ;; Replace list hyphen with dot
+  (font-lock-add-keywords 'org-mode
+                          '(("^ *\\([-]\\) "
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+  ;; Set faces for heading levels
+  (dolist (face '((org-level-1 . 1.2)
+                  (org-level-2 . 1.1)
+                  (org-level-3 . 1.05)
+                  (org-level-4 . 1.0)
+                  (org-level-5 . 1.1)
+                  (org-level-6 . 1.1)
+                  (org-level-7 . 1.1)
+                  (org-level-8 . 1.1))))
+  ;;    (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+
+  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+
+#+end_src
+the meat
+#+begin_src emacs-lisp
 (defun dw/read-file-as-string (path)
   (with-temp-buffer
     (insert-file-contents path)
     (buffer-string)))
+
+(defun date-hook-fn ()
+  (goto-char (line-end-position))
+  (insert (format-time-string " :%m/%d/%Y %H:%M")))
+
+(add-hook! 'org-checkbox-statistics-hook 'date-hook-fn)
 
 (after! org
   (setq org-src-window-setup 'current-window
@@ -345,32 +380,6 @@
                                        ("d" . "definition")
                                        ("t" . "theorem"))))
 
-(defun efs/org-font-setup ()
-  ;; Replace list hyphen with dot
-  (font-lock-add-keywords 'org-mode
-                          '(("^ *\\([-]\\) "
-                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-
-  ;; Set faces for heading levels
-  (dolist (face '((org-level-1 . 1.2)
-                  (org-level-2 . 1.1)
-                  (org-level-3 . 1.05)
-                  (org-level-4 . 1.0)
-                  (org-level-5 . 1.1)
-                  (org-level-6 . 1.1)
-                  (org-level-7 . 1.1)
-                  (org-level-8 . 1.1))))
-  ;;    (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
-
-  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
-
 (use-package! org
   ;; :hook (org-mode . efs/org-font-setup)
   :config
@@ -390,7 +399,15 @@
          ;;          "~/org/roam/routine.org"
          ;;          "~/org/raom/birthdays.org")
          (list "~/org/roam/personal/plan")
+         (list "~/org/roam/personal/health")
+         (list "~/org/roam/personal/health/body")
+         (list "~/org/roam/personal/health/mind")
+         (list "~/org/roam/personal/health/money")
+         (list "~/org/roam/personal/health/intake")
+         (list "~/org/roam/personal/health/sport")
+         (list "~/org/roam/personal/health/medical_services")
          (list "~/org/roam/personal/people")
+         (list "~/org/roam/personal/grow")
          (list "~/org/roam/personal/daily")
          ))
 
@@ -399,7 +416,7 @@
   (setq org-log-into-drawer t)
 
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+        '((sequence "TODO(t)" "FOCUS(f)" "NEXT(n)" "|" "DONE(d!)")
           (sequence "LATER(l)" "BACKLOG(b)" "PLAN(p)" "WORKFLOW(W)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
 
 
@@ -425,12 +442,12 @@
   (setq org-agenda-custom-commands
         '(("d" "Dashboard"
            ((agenda "" ((org-deadline-warning-days 7)))
+            (todo "FOCUS"
+                  ((org-agenda-overriding-header "What's on the table")))
             (todo "NEXT"
                   ((org-agenda-overriding-header "Next Tasks")))
             (todo "TODO"
                   ((org-agenda-overriding-header "Todos")))
-            (todo "FOCUS"
-                  ((org-agenda-overriding-header "What's on the table")))
             (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
 
           ("n" "Next Tasks"
