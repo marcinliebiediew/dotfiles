@@ -26,6 +26,42 @@ bindcode 233 exec light -A 2
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 bindsym $windows+$alt+l exec --no-startup-id i3lock -i ~/Pictures/pinetree.png -c 000000 -e -f -t
 ## SOUND
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+bindsym $windows+F1 exec python ~/.config/scripts/rofi_audio_source.py
+## KEYMAP
+bindsym $windows+$ctrl+$alt+space exec --no-startup-id  fish -c toggle_keymap
+## HOTFIXES
+bindsym XF86Favorites exec --no-startup-id fish -c fix
+bindsym $windows+F10 exec --no-startup-id fish -c fix
+## WALLPAPER
+exec_always bgchd -dir /home/marcin/Pictures/wallpapers/ -intv 30m -bcknd feh
+bindsym $alt+w exec --no-startup-id bgctl next
+bindsym $alt+Shift+w exec --no-startup-id bgctl prev
+## CLIPBOARD
+exec --no-startup-id greenclip daemon>/dev/null
+## SCREENSHOT
+bindsym Print --release exec "scrot -s /home/marcin/Pictures/Screenshots/screenshot-$(date +%F_%T).png -e 'xclip -selection c -t image/png < $f'"
+bindsym Shift+Print exec "scrot -s -u /home/marcin/Pictures/Screenshots/sc.png"
+bindsym $windows+Print exec fish -c rip_content
+bindsym $windows+Shift+Print exec "scrot -s -e 'mv $f /tmp/ && gimp /tmp/$f'"
+
+# CAPTURE
+bindsym $windows+XF86AudioMicMute exec fish -c voice
+bindsym $windows+F4 exec fish -c voice
+# bindsym F12 exec --no-startup-id "xdotool key ctrl+l; xdotool key ctrl+c; xclip -o >> ~/org/roam/20201211211144-bookmarks.org"
+
+# MENUS
+bindsym $windows+space exec "rofi -combi-modi drun,system -show drun"
+bindsym $windows+XF86TouchpadOff exec "rofi -modi window -show"
+bindsym $windows+$alt+e exec "rofimoji -s neutral --rofi-args \\" -color-window '#000000, #000000, #000000' -color-normal '#000000, #ffffff, #000000, #ffffff, #000000' -color-active '#000000, #b3e774, #000000, #ffffff, #b3e774' -color-urgent '#000000, #b3e774, #000000, #b3e774, #000000' -font 'JetBrains Mono 32' -show-icons\\""
+
+## APPS
+bindsym $windows+$alt+d exec "python ~/.config/scripts/grab_i3_floating.py --app spotify"
+# BROWSERS
+# bindsym $windows+$alt+b exec --no-startup-id qutebrowser
 bindsym $windows+$alt+b exec --no-startup-id vivaldi-stable 
 # bindsym $windows+$alt+c exec --no-startup-id brave
 bindsym $windows+$alt+c exec --no-startup-id chromium

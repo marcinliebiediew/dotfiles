@@ -21,13 +21,13 @@
 (package! org-roam-server)
 (package! toc-org)
 (package! graphviz-dot-mode)
+(package! nyan-mode)
 ;(package! company-graphviz-dot)
 ;;(package! eaf=
 ; (package! ctable)
 ; (package! deferred)
 ; (package! epc)
-; (package! s)
-;;
+; (package! s);;
 ;(package! exwm-outer-gaps
 ;  :recipe
 ;  (:host github
