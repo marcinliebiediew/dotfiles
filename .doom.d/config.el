@@ -1,0 +1,802 @@
+(setq user-full-name "Marcin Nowak-Liebiediew"
+      user-mail-address "m.liebiediew@gmail.com")
+(setq doom-font (font-spec :family "monospace" :size 26 :weight 'semi-light)
+      doom-variable-pitch-font (font-spec :family "sans" :size 24))
+(setq display-line-numbers-type nil)
+(setq fancy-splash-image "~/Pictures/8bitwinter2.png")
+
+;; (use-package! exwm-outer-gaps
+;;   :after (exwm xelb)
+;;   :config
+;;   (exwm-outer-gaps-mode +1))
+
+(defun mnl/send-polybar-hook (name number)
+  (start-process-shell-command "polybar-msg" nil (format "polybar-msg hook %s %s" name number)))
+
+(defun mnl/update-polybar-exwm (&optional path)
+  (mnl/send-polybar-hook "exwm-workspaces" 1)
+  (mnl/send-polybar-hook "exwm-workspace-total" 1))
+
+(add-hook! 'exwm-workspace-switch-hook #'mnl/update-polybar-exwm)
+
+;; (use-package! ivy-posframe
+;;   :config
+;;   (ivy-posframe-mode 1)
+;;   (setq ivy-posframe-display-functions-alist
+;;         '((swiper          . ivy-posframe-display-at-point)
+;;           (complete-symbol . ivy-posframe-display-at-point)
+;;           (counsel-M-x     . ivy-posframe-display-at-point)
+;;           (t               . ivy-posframe-display)))
+
+;;   ;; (setq ivy-posframe-parameters '((parent-frame . nil)
+;;   ;;                                 (left-fringe . 8)
+;;   ;;                                 (right-fringe . 8)))
+;;   )
+
+;; (use-package! which-key-posframe
+;;   :config
+;;   (which-key-posframe-mode)
+;;   (setq which-key-posframe-poshandler 'posframe-poshandler-frame-center)
+;;   ;; (setq which-key-posframe-parameters '((parent-frame . nil)
+;;   ;;                                       (left-fringe . 8)
+;;   ;;                                       (right-fringe . 8)))
+;;   )
+
+;; (use-package! hydra
+;;   :config
+;;   (setq hydra-hint-display-type 'posframe)
+;; ;;  (setq hydra-posframe-show-params )
+;;   )
+
+(use-package! lsp-ui
+  ;;:straight t
+  :hook (lsp-mode . lsp-ui-mode)
+  :config
+  (setq lsp-ui-sideline-enable t)
+  (setq lsp-ui-sideline-show-hover t)
+  (setq lsp-ui-sideline-show-hover t)
+  (setq lsp-ui-doc-position 'at-point)
+  (lsp-ui-doc-show))
+;;(tooltip-mode)
+
+(defhydra +hydra/code-nav (:hint nil)
+  "
+ Buffer^^               Server^^                   Symbol
+-------------------------------------------------------------------------------------
+ [_f_] format           [_M-r_] restart            [_d_] declaration  [_i_] implementation  [_o_] documentation
+ [_m_] imenu            [_S_]   shutdown           [_D_] definition   [_t_] type            [_r_] rename
+ [_x_] execute action   [_M-s_] describe session   [_R_] references   [_s_] signature"
+  ("d" lsp-find-declaration)
+  ("D" lsp-ui-peek-find-definitions)
+  ("R" lsp-ui-peek-find-references)
+  ("i" lsp-ui-peek-find-implementation)
+  ("t" lsp-find-type-definition)
+  ("s" lsp-signature-help)
+  ("o" lsp-describe-thing-at-point)
+  ("r" lsp-rename)
+
+  ("<f9>" lsp-ui-doc-show "show doc")
+  ("<S-f9>" lsp-ui-doc-hide "hide doc")
+  ("," lsp-ui-doc-unfocus-frame "focus doc")
+  ("." lsp-ui-doc-focus-frame "unfocus doc")
+
+  ("f" lsp-format-buffer)
+  ("m" lsp-ui-imenu)
+  ("x" lsp-execute-code-action)
+
+  ("M-s" lsp-describe-session)
+  ("M-r" lsp-restart-workspace)
+  ("S" lsp-shutdown-workspace)
+
+  ("SPC" nil "quit")
+  )
+
+(defhydra +hydra/window-nav (:hint nil)
+  "
+  Switch Window: _n_:left  _e_:down  _i_:up  _o_:right
+         Resize: _N_:left  _E_:down  _I_:up  _O_:right
+         Launch: _a_:left  _r_:down _s_:up _t_ight
+           Move: _A_:left  _R_:down _S_:up _T_ight
+         Delete: _d_is one  _D_oes over der
+        Buffers: _,_:previous  _._:next  _b_:select  _f_ind-file
+        History: _x_:layout backward _c_:layout forward
+         Scroll: _u_:up  _y_:down _U_:other up _Y_:other down
+
+"
+  ;; Workspace: _<_:previous _>_:next _w_:move to workspace _W_:go to workspace
+  ;;     Float: _'_
+  ("n" windmove-left)
+  ("e" windmove-down)
+  ("i" windmove-up)
+  ("o" windmove-right)
+
+  ("N" hydra-move-splitter-left)
+  ("E" hydra-move-splitter-down)
+  ("I" hydra-move-splitter-up)
+  ("O" hydra-move-splitter-right)
+
+  ("a" (progn (split-window-right) (windmove-right) (+evil/window-move-left) (+hydra/app-launcher/body) (hydra-push '(+hydra/app-launcher/body))) :exit t)
+  ("r" (progn (split-window-below) (windmove-down) (+hydra/app-launcher/body) (hydra-push '(+hydra/app-launcher/body))) :exit t)
+  ("s" (progn (split-window-below) (windmove-down) (+evil/window-move-up) (+hydra/app-launcher/body) (hydra-push '(+hydra/app-launcher/body))) :exit t)
+  ("t" (progn (split-window-right) (windmove-right) (+hydra/app-launcher/body) (hydra-push '(+hydra/app-launcher/body))) :exit t)
+
+  ("A" +evil/window-move-left)
+  ("R" +evil/window-move-down)
+  ("S" +evil/window-move-up)
+  ("T" +evil/window-move-right)
+
+  ("y" scroll-up-line)
+  ("u" scroll-down-line)
+  ("Y" scroll-other-window)
+  ("U" scroll-other-window-down)
+
+  ("b" switch-to-buffer)
+  ("f" find-file)
+  ("d" delete-window :exit t)
+  ("D" delete-other-windows)
+  ("," previous-buffer)
+  ("." next-buffer)
+
+  ;; ("<" (exwm-workspace-switch (- exwm-workspace-current-index 1)))
+  ;; (">" (exwm-workspace-switch (+ exwm-workspace-current-index 1)))
+  ;; ("w" exwm-workspace-move-window)
+  ;; ;; TODO move and follow
+  ;; ("W" exwm-workspace-switch :quit t)
+  ;; ("'" exwm-floating-toggle-floating)
+
+  ("m" doom/window-maximize-vertically "vermax")
+  ("M" doom/window-maximize-horizontally "hormax")
+
+  ("x" winner-undo)
+  ("c" winner-redo)
+
+  ("<XF86TouchpadOff>" switch-window "switch" :exit t)
+
+
+
+  ("SPC" nil "quit"))
+
+(map! :g "<XF86Launch6>" #'goto-last-change)
+(map! :g "<XF86TouchpadToggle>" #'avy-goto-char-timer)
+(map! :g "<XF86TouchpadOn>" #'avy-goto-line)
+
+(map! :g "<s-f5>" #'avy-goto-char-timer)
+(map! :g "<s-f6>" #'avy-goto-line)
+(map! :g "<s-f7>" #'avy-goto-line)
+(map! :g "<s-f8>" #'swiper)
+
+(map! :g "<f5>" #'evil-scroll-down)
+(map! :g "<f6>" #'evil-scroll-up)
+(map! :g "<f7>" #'scroll-other-window-down)
+(map! :g "<f8>" #'scroll-other-window)
+
+(map! :g "<s-XF86Launch7>" #'goto-last-change)
+(map! :g "<s-XF86Launch8>" #'goto-last-change-reverse)
+(map! :g "<XF86Tools>" #'org-capture)
+;;(map! :g "c-TAB" #'+vterm/toggle)
+;;(map! :g "C-RET" #'switch-to-buffer)
+;; (map! :g "?\s-x"(lambda () (interactive) (evil-window-vnew nil nil) (dired "~")))
+;; (map! :g "?\s-&" (lambda (command)
+;;              (interactive (list (read-shell-command "$ ")))
+;;              (start-process-shell-command command nil command)))
+
+(setq avy-all-windows t)
+(setq avy-keys '(?n ?e ?i ?o ?m ?u ?y))
+
+(setq aw-keys '(?n ?e ?i ?o ?m ?u ?y))
+
+(setq evil-snipe-scope 'buffer)
+
+(use-package! switch-window
+  :config
+  (setq switch-window-qwerty-shortcuts '("n" "e" "i" "o" "m" "u" "r"))
+  ;; (global-set-key (kbd "C-x o") 'switch-window)
+  ;; (global-set-key (kbd "C-x 1") 'switch-window-then-maximize)
+  ;; (global-set-key (kbd "C-x 2") 'switch-window-then-split-below)
+  ;; (global-set-key (kbd "C-x 3") 'switch-window-then-split-right)
+  ;; (global-set-key (kbd "C-x 0") 'switch-window-then-delete)
+
+  ;; (global-set-key (kbd "C-x 4 d") 'switch-window-then-dired)
+  ;; (global-set-key (kbd "C-x 4 f") 'switch-window-then-find-file)
+  ;; (global-set-key (kbd "C-x 4 m") 'switch-window-then-compose-mail)
+  ;; (global-set-key (kbd "C-x 4 r") 'switch-window-then-find-file-read-only)
+
+  ;; (global-set-key (kbd "C-x 4 C-f") 'switch-window-then-find-file)
+  ;; (global-set-key (kbd "C-x 4 C-o") 'switch-window-then-display-buffer)
+
+  ;; (global-set-key (kbd "C-x 4 0") 'switch-window-then-kill-buffer)
+  ;; (defvar switch-window-extra-map
+  ;;   (let ((map (make-sparse-keymap)))
+  ;;     (define-key map (kbd "i") 'switch-window-mvborder-up)
+  ;;     (define-key map (kbd "k") 'switch-window-mvborder-down)
+  ;;     (define-key map (kbd "j") 'switch-window-mvborder-left)
+  ;;     (define-key map (kbd "l") 'switch-window-mvborder-right)
+  ;;     (define-key map (kbd "b") 'balance-windows)
+  ;;     (define-key map (kbd "SPC") 'switch-window-resume-auto-resize-window)
+  ;;     map)
+  ;;   "Extra keymap for ‘switch-window’ input.
+  ;; Note: at the moment, it cannot bind commands, which will
+  ;; increase or decrease window's number, for example:
+  ;; `split-window-below' `split-window-right' `maximize'.")
+  )
+
+
+
+
+
+(map! :g "s-t" #'lsp-describe-thing-at-point)
+(map! :g "s-d" #'lsp-goto-type-definition)
+
+(setq-default evil-escape-key-sequence "ii")
+(setq-default evil-escape-delay 0.2)
+
+(map! :g "<XF86Launch6>"  #'+hydra/code-nav/body)
+(map! :g "<XF86Launch6>"  #'+hydra/code-nav/body)
+(map! :g "<f9>"  #'+hydra/code-nav/body)
+(map! :g "<XF86TouchpadOff>"  #'+hydra/window-nav/body)
+(map! :g "<XF86TouchpadOff>"  #'+hydra/window-nav/body)
+
+(defvar hydra-stack nil)
+
+(defun hydra-push (expr)
+  (push `(lambda () ,expr) hydra-stack))
+
+(defun hydra-pop ()
+  (interactive)
+  (let ((x (pop hydra-stack)))
+    (when x
+      (funcall x))))
+
+(after! rustic
+  (setq lsp-rust-server 'rust-analyzer)
+  (setq rustic-lsp-server 'rust-analyzer))
+
+; (require 'svelte-mode)
+
+(setq projectile-project-search-path '("~/Projects/"))
+
+(defun efs/org-font-setup ()
+  ;; Replace list hyphen with dot
+  (font-lock-add-keywords 'org-mode
+                          '(("^ *\\([-]\\) "
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+  ;; Set faces for heading levels
+  (dolist (face '((org-level-1 . 1.2)
+                  (org-level-2 . 1.1)
+                  (org-level-3 . 1.05)
+                  (org-level-4 . 1.0)
+                  (org-level-5 . 1.1)
+                  (org-level-6 . 1.1)
+                  (org-level-7 . 1.1)
+                  (org-level-8 . 1.1))))
+  ;;    (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+
+  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+
+(defun dw/read-file-as-string (path)
+  (with-temp-buffer
+    (insert-file-contents path)
+    (buffer-string)))
+
+(defun date-hook-fn ()
+  (goto-char (line-end-position))
+  (insert (format-time-string " :%m/%d/%Y %H:%M")))
+
+(add-hook! 'org-checkbox-statistics-hook 'date-hook-fn)
+
+(after! org
+  (setq org-src-window-setup 'current-window
+        org-return-follows-link t
+        org-babel-load-languages '((emacs-lisp . t)
+                                   (python . t)
+                                   (ob-python . t)
+                                   (dot . t)
+                                   (C . t)
+                                   (R . t))
+        org-confirm-babel-evaluate nil
+        org-use-speed-commands t
+        org-catch-invisible-edits 'show
+
+
+        org-preview-latex-image-directory "/tmp/ltximg/"
+        org-structure-template-alist '(("a" . "export ascii")
+                                       ("c" . "center")
+                                       ("C" . "comment")
+                                       ("e" . "example")
+                                       ("E" . "export")
+                                       ("h" . "export html")
+                                       ("l" . "export latex")
+                                       ("q" . "quote")
+                                       ("s" . "src")
+                                       ("v" . "verse")
+                                       ("el" . "src emacs-lisp")
+                                       ("d" . "definition")
+                                       ("t" . "theorem"))))
+
+(use-package! org
+  ;; :hook (org-mode . efs/org-font-setup)
+  :config
+  (require 'org-habit)
+  (add-to-list 'org-modules 'org-habit)
+  (setq org-habit-graph-column 60)
+  (setq org-display-inline-images t)
+  (setq org-redisplay-inline-images t)
+  (setq org-startup-with-inline-images "inlineimages")
+  (setq org-ellipsis " ▾")
+
+  (setq org-agenda-files
+        (append
+         ;; '("~/org/roam/tasks.org"
+         ;;          "~/org/roam/archive.org"
+         ;;          "~/org/roam/habits.org"
+         ;;          "~/org/roam/routine.org"
+         ;;          "~/org/raom/birthdays.org")
+         (list "~/org/roam/personal/plan")
+         (list "~/org/roam/personal/health")
+         (list "~/org/roam/personal/health/body")
+         (list "~/org/roam/personal/health/mind")
+         (list "~/org/roam/personal/health/money")
+         (list "~/org/roam/personal/health/intake")
+         (list "~/org/roam/personal/health/sport")
+         (list "~/org/roam/personal/health/medical_services")
+         (list "~/org/roam/personal/people")
+         (list "~/org/roam/personal/grow")
+         (list "~/org/roam/personal/daily")
+         ))
+
+  (setq org-agenda-start-with-log-mode t)
+  (setq org-log-done 'time)
+  (setq org-log-into-drawer t)
+
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "FOCUS(f)" "NEXT(n)" "|" "DONE(d!)")
+          (sequence "LATER(l)" "BACKLOG(b)" "PLAN(p)" "WORKFLOW(W)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+
+
+  (setq org-refile-targets
+        '(("/home/marcin/org/roam/archive.org" :maxlevel . 1)
+          ("/home/marcin/org/roam/tasks.org" :maxlevel . 1)))
+
+  (advice-add 'org-refile :after 'org-save-all-org-buffers)
+  (setq org-tag-alist
+        '((:startgroup)
+                                        ; Put mutually exclusive tags here
+          (:endgroup)
+          ("@errand" . ?E)
+          ("@home" . ?H)
+          ("@work" . ?W)
+          ("agenda" . ?a)
+          ("planning" . ?p)
+          ("publish" . ?P)
+          ("batch" . ?b)
+          ("note" . ?n)
+          ("idea" . ?i)))
+
+  (setq org-agenda-custom-commands
+        '(("d" "Dashboard"
+           ((agenda "" ((org-deadline-warning-days 7)))
+            (todo "FOCUS"
+                  ((org-agenda-overriding-header "What's on the table")))
+            (todo "NEXT"
+                  ((org-agenda-overriding-header "Next Tasks")))
+            (todo "TODO"
+                  ((org-agenda-overriding-header "Todos")))
+            (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
+
+          ("n" "Next Tasks"
+           ((todo "NEXT"
+                  ((org-agenda-overriding-header "Next Tasks")))))
+
+          ("W" "Work Tasks" tags-todo "+work-email")
+
+          ;; Low-effort next actions
+          ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
+           ((org-agenda-overriding-header "Low Effort Tasks")
+            (org-agenda-max-todos 20)
+            (org-agenda-files org-agenda-files)))
+
+          ("w" "Workflow Status"
+           ((todo "WAIT"
+                  ((org-agenda-overriding-header "Waiting on External")
+                   (org-agenda-files org-agenda-files)))
+            (todo "REVIEW"
+                  ((org-agenda-overriding-header "In Review")
+                   (org-agenda-files org-agenda-files)))
+            (todo "PLAN"
+                  ((org-agenda-overriding-header "In Planning")
+                   (org-agenda-todo-list-sublevels nil)
+                   (org-agenda-files org-agenda-files)))
+            (todo "BACKLOG"
+                  ((org-agenda-overriding-header "Project Backlog")
+                   (org-agenda-todo-list-sublevels nil)
+                   (org-agenda-files org-agenda-files)))
+            (todo "READY"
+                  ((org-agenda-overriding-header "Ready for Work")
+                   (org-agenda-files org-agenda-files)))
+            (todo "ACTIVE"
+                  ((org-agenda-overriding-header "Active Projects")
+                   (org-agenda-files org-agenda-files)))
+            (todo "COMPLETED"
+                  ((org-agenda-overriding-header "Completed Projects")
+                   (org-agenda-files org-agenda-files)))
+            (todo "CANC"
+                  ((org-agenda-overriding-header "Cancelled Projects")
+                   (org-agenda-files org-agenda-files)))))))
+
+  (setq org-capture-templates
+        `(
+          ("d" "Development")
+          ("dh" "Habit" entry
+           (file "~/org/roam/habits.org")
+           "* TODO %?\nSCHEDULED: %<<%Y-%m-%d %a> +1d>\n:PROPERTIES:\n:STYLE:    habit\n:LAST_REPEAT: [2021-02-09 Fri 10:16]\n:END:\n:LOGBOOK:\n:END:")
+          ("ds" "Skill" entry
+           (file+headline "~/org/roam/development.org" "Skill")
+           "* TODO %?")
+          ("dc" "Career" entry
+           (file+headline "~/org/roam/development.org" "Career")
+           "* TODO %?")
+
+          ("j" "Journaling" text (function org-roam-dailies-find-today ))
+
+          ("l" "Languages and Computer Science")
+          ("la" "Algorithms and Data Structures" entry
+           (file+headline "~/org/roam/20201106041342-algorithms.org" "Inbox")
+           "* %?")
+          ("ls" "Computer Science" entry
+           (file "~/org/roam/20201117110134-computer_science.org")
+           "* %?")
+          ("lr" "Rust" entry
+           (file+headline "~/org/roam/20210103082401-rust.org" "Inbox")
+           "* %?")
+          ("lp" "Python" entry
+           (file+headline "~/org/roam/20201213191218-python.org" "Inbox")
+           "* %?")
+          ("lj" "JavaScript & TypeScript" entry
+           (file+headline "~/org/roam/20210219161112-javascript.org" "Inbox")
+           "* %?")
+          ("ll" "Emacs Lisp" entry
+           (file+headline "~/org/roam/20210219161147-emacs_lisp.org" "Inbox")
+           "* %?")
+          ("ld" "Dart" entry
+           (file+headline "~/org/roam/20210219161250-dart_flutter.org" "Inbox")
+           "* %?")
+
+          ("m" "Metrics Capture")
+          ("mw" "Weight" table-line (file+headline "~/org/roam/metrics.org" "Weight")
+           "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)
+          ("me" "Checking Email" entry (file+olp+datetree "~/org/roam/metrics.org")
+           "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+          ("mc" "Cooking" entry (file+olp+datetree "~/org/roam/metrics.org")
+           "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+          ("ms" "Shopping" entry (file+olp+datetree "~/org/roam/metrics.org")
+           "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+          ("mt" "Cleaning" entry (file+olp+datetree "~/org/roam/metrics.org")
+           "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+          ("mr" "Ricing" entry (file+olp+datetree "~/org/roam/metrics.org")
+           "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+
+          ("o" "Link capture" entry
+           (file+headline "~/org/roam/bookmarks.org" "INBOX")
+           "* %a %U"
+           :immediate-finish t)
+
+          ("p" "Projects")
+          ("pn" "Neal")
+          ("pni" "Idea" entry (file+headline "~/org/projects/SDS.org" "Ideas"))
+          ("pnm" "Meeting" entry (file+headline "~/org/projects/SDS.org" "Meetings")
+           "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
+           :clock-in :clock-resume
+           :empty-lines 1)
+          ("pnt" "Task" entry (file+headline "~/org/projects/SDS.org" "Tasks")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+          ("pj" "Jacob")
+          ("pji" "Idea" entry (file+headline "~/org/projects/Jacob.org" "Ideas"))
+          ("pjm" "Meeting" entry (file+headline "~/org/projects/Jacob.org" "Meetings")
+           "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
+           :clock-in :clock-resume
+           :empty-lines 1)
+          ("pjt" "Task" entry (file+headline "~/org/projects/Jacob.org" "Tasks")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+
+          ("t" "Tasks / Projects")
+          ("tt" "Task" entry (file+olp "~/org/roam/tasks.org" "Inbox")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+          ("tp" "Taxes and Law" entry (file+olp "~/org/roam/tasks.org" "Biurokcja")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+
+          ("v" "Voice")
+          ("vr" "start recording" nil (file+function "~/org/roam/voice/.org" (lambda () (interactive) (call-process-shell-command "audio-recorder -c start && audio-recorder -c hide" nil 0)))
+           "* new recording %U %a"           )
+          ("vs" "stop recording" nil (function (lambda () (interactive) (call-process-shell-command "audio-recorder -c stop && audio-recorder -c quit" nil 0))))
+          ("va" "show app" nil (function (lambda () (interactive) (call-process-shell-command "audio-recorder -c show" nil 0))))
+          ("vt" "hide app" nil (function (lambda () (interactive) (call-process-shell-command "audio-recorder -c hide" nil 0))))
+
+          ("w" "Workflow")
+          ("wa" "Apps Improvement" entry (file+olp "~/org/roam/workflow.org" "Apps")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+          ("wc" "Capture Improvement" entry (file+olp "~/org/roam/workflow.org" "Capture")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+          ("wf" "Functional Improvement" entry (file+olp "~/org/roam/workflow.org" "Functional")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+          ("wi" "Idea" entry (file+olp "~/org/roam/workflow.org" "Inbox")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+          ("wm" "MouseKiller" entry (file+olp "~/org/roam/workflow.org" "Mouse")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+          ("wv" "Visual Improvement" entry (file+olp "~/org/roam/workflow.org" "Visual")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+          ))
+
+
+  (define-key global-map (kbd "C-c j")
+    (lambda () (interactive) (org-capture nil "jj")))
+
+  (efs/org-font-setup))
+
+
+
+(setq org-html-validation-link nil)  ;; removes validation link from exported html file
+(require 'org-protocol)
+(setq org-protocol-default-template-key "o")
+
+(setq deft-directory "~/org"
+      deft-extensions '("txt" "org")
+      deft-recursive t)
+
+(use-package! org-roam-server
+  :config
+  (setq org-roam-server-host "127.0.0.1"
+        org-roam-server-port 8080
+        org-roam-server-authenticate nil
+        org-roam-server-export-inline-images t
+        org-roam-server-serve-files nil
+        org-roam-server-served-file-extensions '("pdf" "mp4" "ogv")
+        org-roam-server-network-poll t
+        org-roam-server-network-arrows nil
+        org-roam-server-network-label-truncate t
+        org-roam-server-network-label-truncate-length 60
+        org-roam-server-network-label-wrap-length 20))
+
+
+
+(use-package! org-roam
+  :config
+  (setq org-directory "~/org/")
+  (setq org-roam-dailies-directory "personal/daily/")
+  (setq org-roam-tag-sources '(prop all-directories))
+  (setq org-roam-graph-executable "/usr/bin/dot")
+  (setq org-roam-graph-viewer "/usr/bin/firefox")
+  (setq org-roam-prefer-id-links t)
+  (setq org-roam-dailies-capture-templates
+        `(("l" "lab" entry
+           #'org-roam-capture--get-point
+           :file-name "personal/daily/%<%Y-%m-%d>"
+           :head ,(dw/read-file-as-string "~/org/templates/journal.org")
+           :olp ("Journal")
+           :immediate-finish t
+           )))
+  (add-hook!
+   'org-roam-capture-after-find-file-hook
+   (lambda ()
+     (org-id-get-create)
+     (save-buffer)
+     (org-roam-db-update)))
+  (advice-add
+   #'org-roam-link--replace-link-on-save
+   :after
+   #'my/replace-file-with-id-link)
+  )
+
+(defun org-roam-server-open ()
+  "Ensure the server is active, then open the roam graph."
+  (interactive)
+  (smartparens-global-mode -1)
+  (org-roam-server-mode 1)
+  (browse-url-xdg-open (format "http://localhost:%d" org-roam-server-port))
+  (smartparens-global-mode 1))
+
+;; automatically enable server-mode
+(after! org-roam
+  (smartparens-global-mode -1)
+  (org-roam-server-mode)
+  (smartparens-global-mode 1))
+
+(use-package! toc-org
+  :config
+  (add-hook! 'org-mode-hook 'toc-org-mode)
+  (add-hook! 'markdown-mode-hook 'toc-org-mode)
+  )
+;; (if (require 'toc-org nil t)
+;;     (add-hook 'org-mode-hook 'toc-org-mode)
+
+;;   ;; enable in markdown, too
+;;   (add-hook 'markdown-mode-hook 'toc-org-mode)
+;;   (define-key markdown-mode-map (kbd "\C-c\C-o") 'toc-org-markdown-follow-thing-at-point))
+;; (warn "toc-org not found"))
+
+(defun my/replace-file-with-id-link ()
+  "Replaces file links with ID links where possible in current buffer."
+  (interactive)
+  (let (path desc)
+    (org-with-point-at 1
+      (while (re-search-forward org-link-bracket-re nil t)
+        (setq desc (match-string 2))
+        (when-let ((link (save-match-data (org-element-lineage (org-element-context) '(link) t))))
+          (when (string-equal "file" (org-element-property :type link))
+            (setq path (expand-file-name (org-element-property :path link)))
+            (replace-match "")
+            (insert (org-roam-format-link path desc))))))))
+
+;; (dolist (file (org-roam--list-all-files))
+;;   (with-current-buffer (or (find-buffer-visiting file)
+;;                            (find-file-noselect file))
+;;     (org-with-point-at 1
+;;       (org-id-get-create))
+;;     (save-buffer)))
+
+;; (org-roam-db-build-cache)
+
+;; (dolist (file (org-roam--list-all-files))
+;;   (with-current-buffer (or (find-buffer-visiting file)
+;;                            (find-file-noselect file))
+;;     (my/replace-file-with-id-link)
+;;     (save-buffer)))
+
+;; (org-roam-db-build-cache)
+
+;; (defhydra +hydra/app-launcher (:hint nil :exit t)
+;;   "
+;;   Anything: _r_un nything
+;;      Stack: _s_:buffers browsers _f_iles
+;;      Tools: _t_erminal _a_:browser _B_igger browser
+;;      Files: current folder project folder
+;;        PKS:
+;;      Feeds: _m_ail _y_ss _h_ackernews _Y_eddit _4_chan
+;;        Fun: _y_outube _w_aking up _m_spotify _M_soundcloud
+
+;; "
+;;   ("t" vterm)
+;;   ("a" (lambda () (interactive) (start-process-shell-command "qutebrowser" nil "qutebrowser")))
+;;   ("B" (lambda () (interactive) (start-process-shell-command "chromium" nil "chromium")))
+;;   ("y" (lambda () (interactive) (start-process-shell-command "youtube" nil "qutebrowser youtube.com")))
+;;   ("4" (lambda () (interactive) (start-process-shell-command "4chan" nil "qutebrowser 4chan.org")))
+;;   ("h" (lambda () (interactive) (start-process-shell-command "HN" nil "qutebrowser news.ycombinator.com")))
+;;   ("y" (lambda () (interactive) (start-process-shell-command "reddit" nil "qutebrowser reddit.com")))
+;;   ("m" =mu4e)
+;;   ("Y" elfeed)
+;;   ("w" (lambda () (interactive) (start-process-shell-command "reddit" nil "qutebrowser https://app.wakingup.com/")))
+;;   ("m" (lambda () (interactive) (start-process-shell-command "spotify" nil "/usr/bin/spotify")))
+;;   ("M" soundklaus-my-favorites)
+;;   ("s" switch-to-buffer)
+;;   ("f" find-file)
+;;   ("F" (lambda () (interactive) (start-process-shell-command "dolphin" nil "dolphin")))
+;;   ("r" (lambda (command)
+;;          (interactive (list (read-shell-command "$ ")))
+;;          (start-process-shell-command command nil command)))
+;;   ("q" nil)
+;;   )
+
+;; (use-package! mu4e
+;;   ;; :load-path "/usr/share/emacs/site-lisp/mu4e/"
+;;   ;; :defer 20 ; Wait until 20 seconds after startup
+;;   :config
+
+;;   ;; This is set to 't' to avoid mail syncing issues when using mbsync
+;;   (setq mu4e-change-filenames-when-moving t)
+
+;;   ;; Refresh mail using isync every 10 minutes
+;;   (setq mu4e-update-interval (* 10 60))
+;;   (setq mu4e-get-mail-command "mbsync -a")
+;;   (setq mu4e-maildir "~/Mail")
+
+;;   (setq mu4e-drafts-folder "/[Gmail]/Drafts")
+;;   (setq mu4e-sent-folder   "/[Gmail]/Sent Mail")
+;;   (setq mu4e-refile-folder "/[Gmail]/All Mail")
+;;   (setq mu4e-trash-folder  "/[Gmail]/Kosz")
+;;   (setq mu4e-bookmarks
+;;         '((:name "Unread messages" :query "flag:unread AND NOT flag:trashed" :key ?i)
+;;           (:name "Today's messages" :query "date:today..now" :key ?t)
+;;           (:name "The Boss" :query "from:stallman" :key ?s)
+;;           (:name "Last 7 days" :query "date:7d..now" :hide-unread t :key ?w)
+;;           (:name "Messages with images" :query "mime:image/*" :key ?p)))
+;;   (setq mu4e-maildir-shortcuts
+;;         '((:maildir "/Inbox"    :key ?i)
+;;           (:maildir "/[Gmail]/Sent Mail" :key ?s)
+;;           (:maildir "/[Gmail]/Trash"     :key ?t)
+;;           (:maildir "/[Gmail]/Drafts"    :key ?d)
+;;           (:maildir "/[Gmail]/All Mail"  :key ?a)))
+;;   (setq smtpmail-smtp-server "smtp.gmail.com"
+;;         smtpmail-smtp-service 465
+;;         smtpmail-stream-type  'ssl)
+;;   (setq message-send-mail-function 'smtpmail-send-it)
+;;   (setq mu4e-compose-signature "Marcin"))
+
+(use-package! leetcode
+  :config
+  (setq leetcode-prefer-language "python3")
+  (setq leetcode-prefer-sql "mysql")
+  (setq leetcode-save-solutions t)
+  (setq leetcode-directory "~/org/roam/science_and_engineering/formal_science/computer_science/algorithms_and_data_structures/leetcode"))
+
+;; (use-package! lastpass
+;;   :config
+;;   :after (exwm xelb)
+;;   (setq lastpass-user "m.liebiediew@gmail.com")
+;;   (setq lastpass-trust-login t)
+;;   (lastpass-auth-source-enable))
+
+(use-package! emms
+  :config
+  (require 'emms-setup)
+  (emms-standard)
+  (emms-default-players)
+  )
+
+(use-package! soundklaus
+  :commands
+  (soundklaus-activities
+   soundklaus-connect
+   soundklaus-my-favorites
+   soundklaus-my-playlists
+   soundklaus-my-tracks
+   soundklaus-playlists
+   soundklaus-tracks))
+
+(use-package! graphviz-dot-mode
+  :config
+  (setq graphviz-dot-indent-width 4))
+
+(use-package! company-graphviz-dot
+  )
+
+(defun in-same-heading-as-clock-p ()
+  "Check if the cursor is in the same heading as the current clock.
+That means:
+1. There is a current clock
+2. The cursor is in the same buffer as that clock.
+3. The cursor is in the same heading as that clock."
+  (let ((cb (current-buffer))
+        (clockb (marker-buffer org-clock-marker))
+        clock-hb
+        cursor-hb)
+
+    (when (and
+           clockb             ; clock buffer
+           ;; clock buffer is the same as this buffer
+           (eq cb clockb))
+      (setq clock-hb (save-excursion
+                       (goto-char (marker-position org-clock-marker))
+                       (org-back-to-heading t)
+                       (point))
+            cursor-hb (save-excursion
+                        (org-back-to-heading t)
+                        (point)))
+      (= cursor-hb clock-hb))))
+
+(defun action-1 ()
+  (cond
+   ;; clock is running in this heading, do nothing
+   ((in-same-heading-as-clock-p)
+    nil)
+
+   ;; clock is running in another heading. IF this heading has autoclock
+   ((and (marker-buffer org-clock-marker)
+         (not (in-same-heading-as-clock-p)))
+    ;; first clock out
+    (org-clock-out)
+    (when (org-entry-get (point) "AUTOCLOCK")
+      (org-clock-in)))
+   ;; no clock is running, and
+   ((and (null (marker-buffer org-clock-marker))
+         (org-entry-get (point) "AUTOCLOCK"))
+    (org-clock-in))))
+
+
+(add-hook! 'post-command-hook 'action-1)

@@ -20,6 +20,8 @@
 ;(package! which-key-posframe)
 (package! org-roam-server)
 (package! toc-org)
+(package! graphviz-dot-mode)
+;(package! company-graphviz-dot)
 ;;(package! eaf=
 ; (package! ctable)
 ; (package! deferred)
