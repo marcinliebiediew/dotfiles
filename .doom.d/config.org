@@ -79,6 +79,10 @@
   (lsp-ui-doc-show))
 ;;(tooltip-mode)
 #+end_src
+** 😼 nyan
+#+begin_src emacs-lisp
+(use-package! nyan-mode)
+#+end_src
 * 🧭 navigation
 *** code navigation
 #+begin_src emacs-lisp
@@ -273,8 +277,10 @@
 
 * ⌨ map
 #+begin_src emacs-lisp
-;;(setq-default evil-escape-key-sequence "ii")
-;;(setq-default evil-escape-delay 0.2)
+(setq-default evil-escape-key-sequence "ii")
+(setq-default evil-escape-delay 0.2)
+
+(map! :g "<XF86Launch6>"  #'+hydra/code-nav/body)
 (map! :g "<XF86Launch6>"  #'+hydra/code-nav/body)
 (map! :g "<f9>"  #'+hydra/code-nav/body)
 (map! :g "<XF86TouchpadOff>"  #'+hydra/window-nav/body)
@@ -302,7 +308,7 @@
 #+end_src
 ** JS
 #+begin_src emacs-lisp
-; (require 'svelte-mode)
+                                        ; (require 'svelte-mode)
 #+end_src
 * 🗄 organize
 ** 📽 projects
@@ -310,6 +316,54 @@
 (setq projectile-project-search-path '("~/Projects/"))
 #+end_src
 ** 🦄 org
+*** clockin
+#+begin_src emacs-lisp
+(defun in-same-heading-as-clock-p ()
+  "Check if the cursor is in the same heading as the current clock.
+That means:
+1. There is a current clock
+2. The cursor is in the same buffer as that clock.
+3. The cursor is in the same heading as that clock."
+  (let ((cb (current-buffer))
+        (clockb (marker-buffer org-clock-marker))
+        clock-hb
+        cursor-hb)
+
+    (when (and
+           clockb             ; clock buffer
+           ;; clock buffer is the same as this buffer
+           (eq cb clockb))
+      (setq clock-hb (save-excursion
+                       (goto-char (marker-position org-clock-marker))
+                       (org-back-to-heading t)
+                       (point))
+            cursor-hb (save-excursion
+                        (org-back-to-heading t)
+                        (point)))
+      (= cursor-hb clock-hb))))
+
+(defun action-1 ()
+  (cond
+   ;; clock is running in this heading, do nothing
+   ((in-same-heading-as-clock-p)
+    nil)
+
+   ;; clock is running in another heading. IF this heading has autoclock
+   ((and (marker-buffer org-clock-marker)
+         (not (in-same-heading-as-clock-p)))
+    ;; first clock out
+    (org-clock-out)
+    (when (org-entry-get (point) "AUTOCLOCK")
+      (org-clock-in)))
+   ;; no clock is running, and
+   ((and (null (marker-buffer org-clock-marker))
+         (org-entry-get (point) "AUTOCLOCK"))
+    (org-clock-in))))
+
+
+(add-hook! 'post-command-hook 'action-1)
+#+end_src
+*** rest
 #+begin_src emacs-lisp
 (defun efs/org-font-setup ()
   ;; Replace list hyphen with dot
@@ -611,22 +665,6 @@ the meat
 #+end_src
 ** 🧠 org-roam
 #+begin_src emacs-lisp
-(use-package! org-roam-server
-  :config
-  (setq org-roam-server-host "127.0.0.1"
-        org-roam-server-port 8080
-        org-roam-server-authenticate nil
-        org-roam-server-export-inline-images t
-        org-roam-server-serve-files nil
-        org-roam-server-served-file-extensions '("pdf" "mp4" "ogv")
-        org-roam-server-network-poll t
-        org-roam-server-network-arrows nil
-        org-roam-server-network-label-truncate t
-        org-roam-server-network-label-truncate-length 60
-        org-roam-server-network-label-wrap-length 20))
-
-
-
 (use-package! org-roam
   :config
   (setq org-directory "~/org/")
@@ -635,8 +673,37 @@ the meat
   (setq org-roam-graph-executable "/usr/bin/dot")
   (setq org-roam-graph-viewer "/usr/bin/firefox")
   (setq org-roam-prefer-id-links t)
+  (setq org-roam-capture-immediate-template '(("d" "default" plain (function org-roam--capture-get-point)
+                                               "%?"
+                                               :file-name "${slug}"
+                                               :head
+                                               "#+TITLE: ${title}\n#+created_at:%T\n#+roam_tags: Empty\n\n%?\n* Inbox \n\n* Connected"
+                                               :unnarrowed t
+                                               :immediate-finish t)))
+
+  (setq org-roam-capture-templates '(("n" "new" plain (function org-roam-capture--get-point)
+                                      "%?"
+                                      :file-name "${slug}"
+                                      :head
+                                      "#+TITLE: ${title}\n#+created_at:%T\n#+roam_tags: Empty\n\n%?\n* Inbox \n\n* Connected"
+                                      :immediate-finish nil
+                                      :unnarrowed t)
+                                     ("i" "inbox" plain (function org-roam-capture--get-point)
+                                      "** %?"
+                                      :file-name "${slug}"
+                                      :olp ("Inbox")
+                                      :immediate-finish nil
+                                      :unnarrowed nil)
+                                     ("r" "resources" plain (function org-roam-capture--get-point)
+                                      "- %?"
+                                      :file-name "${slug}"
+                                      :olp ("Resources")
+                                      :immediate-finish nil
+                                      :unnarrowed nil)
+                                     )
+        )
   (setq org-roam-dailies-capture-templates
-        `(("l" "lab" entry
+        `(("d" "default" entry
            #'org-roam-capture--get-point
            :file-name "personal/daily/%<%Y-%m-%d>"
            :head ,(dw/read-file-as-string "~/org/templates/journal.org")
@@ -654,6 +721,22 @@ the meat
    :after
    #'my/replace-file-with-id-link)
   )
+#+end_src
+** org-roam-server
+#+begin_src emacs-lisp
+(use-package! org-roam-server
+  :config
+  (setq org-roam-server-host "127.0.0.1"
+        org-roam-server-port 8080
+        org-roam-server-authenticate nil
+        org-roam-server-export-inline-images t
+        org-roam-server-serve-files nil
+        org-roam-server-served-file-extensions '("pdf" "mp4" "ogv")
+        org-roam-server-network-poll t
+        org-roam-server-network-arrows nil
+        org-roam-server-network-label-truncate t
+        org-roam-server-network-label-truncate-length 60
+        org-roam-server-network-label-wrap-length 20))
 
 (defun org-roam-server-open ()
   "Ensure the server is active, then open the roam graph."
@@ -662,6 +745,7 @@ the meat
   (org-roam-server-mode 1)
   (browse-url-xdg-open (format "http://localhost:%d" org-roam-server-port))
   (smartparens-global-mode 1))
+(add-hook 'org-capture-mode-hook #'org-id-get-create)
 
 ;; automatically enable server-mode
 (after! org-roam
@@ -686,35 +770,35 @@ the meat
 #+end_src
 ** V1 -> V2 migration
 #+begin_src emacs-lisp
- (defun my/replace-file-with-id-link ()
-   "Replaces file links with ID links where possible in current buffer."
-   (interactive)
-   (let (path desc)
-     (org-with-point-at 1
-       (while (re-search-forward org-link-bracket-re nil t)
-         (setq desc (match-string 2))
-         (when-let ((link (save-match-data (org-element-lineage (org-element-context) '(link) t))))
-           (when (string-equal "file" (org-element-property :type link))
-             (setq path (expand-file-name (org-element-property :path link)))
-             (replace-match "")
-             (insert (org-roam-format-link path desc))))))))
+(defun my/replace-file-with-id-link ()
+  "Replaces file links with ID links where possible in current buffer."
+  (interactive)
+  (let (path desc)
+    (org-with-point-at 1
+      (while (re-search-forward org-link-bracket-re nil t)
+        (setq desc (match-string 2))
+        (when-let ((link (save-match-data (org-element-lineage (org-element-context) '(link) t))))
+          (when (string-equal "file" (org-element-property :type link))
+            (setq path (expand-file-name (org-element-property :path link)))
+            (replace-match "")
+            (insert (org-roam-format-link path desc))))))))
 
- ;; (dolist (file (org-roam--list-all-files))
- ;;   (with-current-buffer (or (find-buffer-visiting file)
- ;;                            (find-file-noselect file))
- ;;     (org-with-point-at 1
- ;;       (org-id-get-create))
- ;;     (save-buffer)))
+;; (dolist (file (org-roam--list-all-files))
+;;   (with-current-buffer (or (find-buffer-visiting file)
+;;                            (find-file-noselect file))
+;;     (org-with-point-at 1
+;;       (org-id-get-create))
+;;     (save-buffer)))
 
- ;; (org-roam-db-build-cache)
+;; (org-roam-db-build-cache)
 
- ;; (dolist (file (org-roam--list-all-files))
- ;;   (with-current-buffer (or (find-buffer-visiting file)
- ;;                            (find-file-noselect file))
- ;;     (my/replace-file-with-id-link)
- ;;     (save-buffer)))
+;; (dolist (file (org-roam--list-all-files))
+;;   (with-current-buffer (or (find-buffer-visiting file)
+;;                            (find-file-noselect file))
+;;     (my/replace-file-with-id-link)
+;;     (save-buffer)))
 
- ;; (org-roam-db-build-cache)
+;; (org-roam-db-build-cache)
 #+end_src
 
 * 📦 app
@@ -799,7 +883,7 @@ all windows spawn inside currently selected buffer
   (setq leetcode-prefer-language "python3")
   (setq leetcode-prefer-sql "mysql")
   (setq leetcode-save-solutions t)
-  (setq leetcode-directory "~/Code/algorithms_and_data_structures/leetcode"))
+  (setq leetcode-directory "~/org/roam/science_and_engineering/formal_science/computer_science/algorithms_and_data_structures/leetcode"))
 #+end_src
 ** 🔐 lastpass
 #+begin_src emacs-lisp
@@ -830,4 +914,13 @@ all windows spawn inside currently selected buffer
    soundklaus-my-tracks
    soundklaus-playlists
    soundklaus-tracks))
+#+end_src
+** graphs
+#+begin_src emacs-lisp
+(use-package! graphviz-dot-mode
+  :config
+  (setq graphviz-dot-indent-width 4))
+
+(use-package! company-graphviz-dot
+  )
 #+end_src
