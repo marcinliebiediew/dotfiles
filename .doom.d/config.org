@@ -1,5 +1,51 @@
 #+STARTUP: overview
 #+VISIBILITY: folded
+* TOC :TOC@3:
+- [[#-start][🏇 start]]
+- [[#-ui][💄 UI]]
+  - [[#-gaps][🌌 gaps]]
+  - [[#bar_chart-status-bar][:bar_chart: status bar]]
+  - [[#-help-windows][🐕 help windows]]
+    - [[#ivy-posframe][ivy-posframe]]
+    - [[#which-key-posframe][which-key-posframe]]
+    - [[#hydra-posframe][hydra-posframe]]
+    - [[#code-completion-and-docs][code completion and docs]]
+  - [[#-nyan][😼 nyan]]
+- [[#-navigation][🧭 navigation]]
+    - [[#code-navigation][code navigation]]
+    -  [[#window-movement-sizing-and-placement][window movement, sizing and placement]]
+    - [[#text-movement][text movement]]
+    - [[#-sniping-windows-buffers-lines-chars][🎯 sniping windows, buffers, lines, chars]]
+    - [[#avy][avy]]
+    - [[#aw][aw]]
+    - [[#evil][evil]]
+    - [[#switch-window][switch-window]]
+    - [[#-history][📜 history]]
+    - [[#-search][🔎 search]]
+    - [[#-code][🥐 code]]
+- [[#-map][⌨ map]]
+  - [[#utils][utils]]
+- [[#-toolchains][⚙ toolchains]]
+  - [[#rust][Rust]]
+  - [[#js][JS]]
+- [[#-organize][🗄 organize]]
+  - [[#-projects][📽 projects]]
+  - [[#-org][🦄 org]]
+    - [[#clockin][clockin]]
+    - [[#fonts][fonts]]
+    - [[#the-meat][the meat]]
+  - [[#-org-roam][🧠 org-roam]]
+  - [[#org-roam-server][org-roam-server]]
+  - [[#table-of-contents][table of contents]]
+  - [[#v1---v2-migration][V1 -> V2 migration]]
+- [[#-app][📦 app]]
+  - [[#shortcuts][shortcuts]]
+  - [[#-mail][📧 mail]]
+  - [[#leetcode][leetcode]]
+  - [[#-lastpass][🔐 lastpass]]
+  - [[#-emms][🔊 emms]]
+  - [[#-soundcloud][🌤 soundcloud]]
+  - [[#graphs][graphs]]
 
 * 🏇 start
 #+begin_src emacs-lisp
@@ -363,7 +409,7 @@ That means:
 
 (add-hook! 'post-command-hook 'action-1)
 #+end_src
-*** rest
+*** fonts
 #+begin_src emacs-lisp
 (defun efs/org-font-setup ()
   ;; Replace list hyphen with dot
@@ -392,7 +438,7 @@ That means:
   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
 #+end_src
-the meat
+*** the meat
 #+begin_src emacs-lisp
 (defun dw/read-file-as-string (path)
   (with-temp-buffer
@@ -447,11 +493,6 @@ the meat
 
   (setq org-agenda-files
         (append
-         ;; '("~/org/roam/tasks.org"
-         ;;          "~/org/roam/archive.org"
-         ;;          "~/org/roam/habits.org"
-         ;;          "~/org/roam/routine.org"
-         ;;          "~/org/raom/birthdays.org")
          (list "~/org/roam/personal/plan")
          (list "~/org/roam/personal/health")
          (list "~/org/roam/personal/health/body")
@@ -470,8 +511,8 @@ the meat
   (setq org-log-into-drawer t)
 
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "FOCUS(f)" "NEXT(n)" "|" "DONE(d!)")
-          (sequence "LATER(l)" "BACKLOG(b)" "PLAN(p)" "WORKFLOW(W)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+        '((sequence "TODO(t)" "FOCUS(f)" "NEXT(n)" "MIT(m)" "BIGBALL(B)" "|" "DONE(d!)")
+          (sequence "ACTIVE(a)" "READY(r)" "ONHOLD(h)" "WAIT(w@/!)""LATER(l)" "PLAN(p)" "BACKLOG(b)" "HORIZON(h)" "REVIEW(v)" "|" "COMPLETED(c)" "CANC(k@)" "FAILED(F)")))
 
 
   (setq org-refile-targets
@@ -483,13 +524,11 @@ the meat
         '((:startgroup)
                                         ; Put mutually exclusive tags here
           (:endgroup)
-          ("@errand" . ?E)
           ("@home" . ?H)
           ("@work" . ?W)
           ("agenda" . ?a)
+          ("workflow" . ?a)
           ("planning" . ?p)
-          ("publish" . ?P)
-          ("batch" . ?b)
           ("note" . ?n)
           ("idea" . ?i)))
 
@@ -546,83 +585,24 @@ the meat
 
   (setq org-capture-templates
         `(
-          ("d" "Development")
-          ("dh" "Habit" entry
-           (file "~/org/roam/habits.org")
-           "* TODO %?\nSCHEDULED: %<<%Y-%m-%d %a> +1d>\n:PROPERTIES:\n:STYLE:    habit\n:LAST_REPEAT: [2021-02-09 Fri 10:16]\n:END:\n:LOGBOOK:\n:END:")
-          ("ds" "Skill" entry
-           (file+headline "~/org/roam/development.org" "Skill")
-           "* TODO %?")
-          ("dc" "Career" entry
-           (file+headline "~/org/roam/development.org" "Career")
-           "* TODO %?")
-
           ("j" "Journaling" text (function org-roam-dailies-find-today ))
 
-          ("l" "Languages and Computer Science")
-          ("la" "Algorithms and Data Structures" entry
-           (file+headline "~/org/roam/20201106041342-algorithms.org" "Inbox")
-           "* %?")
-          ("ls" "Computer Science" entry
-           (file "~/org/roam/20201117110134-computer_science.org")
-           "* %?")
-          ("lr" "Rust" entry
-           (file+headline "~/org/roam/20210103082401-rust.org" "Inbox")
-           "* %?")
-          ("lp" "Python" entry
-           (file+headline "~/org/roam/20201213191218-python.org" "Inbox")
-           "* %?")
-          ("lj" "JavaScript & TypeScript" entry
-           (file+headline "~/org/roam/20210219161112-javascript.org" "Inbox")
-           "* %?")
-          ("ll" "Emacs Lisp" entry
-           (file+headline "~/org/roam/20210219161147-emacs_lisp.org" "Inbox")
-           "* %?")
-          ("ld" "Dart" entry
-           (file+headline "~/org/roam/20210219161250-dart_flutter.org" "Inbox")
-           "* %?")
-
-          ("m" "Metrics Capture")
-          ("mw" "Weight" table-line (file+headline "~/org/roam/metrics.org" "Weight")
-           "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)
-          ("me" "Checking Email" entry (file+olp+datetree "~/org/roam/metrics.org")
-           "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
-          ("mc" "Cooking" entry (file+olp+datetree "~/org/roam/metrics.org")
-           "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
-          ("ms" "Shopping" entry (file+olp+datetree "~/org/roam/metrics.org")
-           "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
-          ("mt" "Cleaning" entry (file+olp+datetree "~/org/roam/metrics.org")
-           "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
-          ("mr" "Ricing" entry (file+olp+datetree "~/org/roam/metrics.org")
-           "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+          ;; ("m" "Metrics Capture")
+          ;; ("mw" "Weight" table-line (file+headline "~/org/roam/metrics.org" "Weight")
+          ;;  "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)
+          ;; ("mc" "Cooking" entry (file+olp+datetree "~/org/roam/metrics.org")
+          ;;  "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+          ;; ("ms" "Shopping" entry (file+olp+datetree "~/org/roam/metrics.org")
+          ;;  "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+          ;; ("mt" "Cleaning" entry (file+olp+datetree "~/org/roam/metrics.org")
+          ;;  "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
 
           ("o" "Link capture" entry
            (file+headline "~/org/roam/bookmarks.org" "INBOX")
            "* %a %U"
            :immediate-finish t)
 
-          ("p" "Projects")
-          ("pn" "Neal")
-          ("pni" "Idea" entry (file+headline "~/org/projects/SDS.org" "Ideas"))
-          ("pnm" "Meeting" entry (file+headline "~/org/projects/SDS.org" "Meetings")
-           "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
-           :clock-in :clock-resume
-           :empty-lines 1)
-          ("pnt" "Task" entry (file+headline "~/org/projects/SDS.org" "Tasks")
-           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
-          ("pj" "Jacob")
-          ("pji" "Idea" entry (file+headline "~/org/projects/Jacob.org" "Ideas"))
-          ("pjm" "Meeting" entry (file+headline "~/org/projects/Jacob.org" "Meetings")
-           "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
-           :clock-in :clock-resume
-           :empty-lines 1)
-          ("pjt" "Task" entry (file+headline "~/org/projects/Jacob.org" "Tasks")
-           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
-
-          ("t" "Tasks / Projects")
-          ("tt" "Task" entry (file+olp "~/org/roam/tasks.org" "Inbox")
-           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
-          ("tp" "Taxes and Law" entry (file+olp "~/org/roam/tasks.org" "Biurokcja")
+          ("t" "Task" entry (file+olp "~/org/roam/tasks.org" "Inbox")
            "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
 
           ("v" "Voice")
@@ -632,19 +612,9 @@ the meat
           ("va" "show app" nil (function (lambda () (interactive) (call-process-shell-command "audio-recorder -c show" nil 0))))
           ("vt" "hide app" nil (function (lambda () (interactive) (call-process-shell-command "audio-recorder -c hide" nil 0))))
 
-          ("w" "Workflow")
-          ("wa" "Apps Improvement" entry (file+olp "~/org/roam/workflow.org" "Apps")
-           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
-          ("wc" "Capture Improvement" entry (file+olp "~/org/roam/workflow.org" "Capture")
-           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
-          ("wf" "Functional Improvement" entry (file+olp "~/org/roam/workflow.org" "Functional")
-           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
-          ("wi" "Idea" entry (file+olp "~/org/roam/workflow.org" "Inbox")
-           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
-          ("wm" "MouseKiller" entry (file+olp "~/org/roam/workflow.org" "Mouse")
-           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
-          ("wv" "Visual Improvement" entry (file+olp "~/org/roam/workflow.org" "Visual")
-           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+          ;; ("w" "Workflow")
+          ;; ("wa" "Apps Improvement" entry (file+olp "~/org/roam/workflow.org" "Apps")
+          ;;  "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
           ))
 
 
@@ -659,7 +629,7 @@ the meat
 (require 'org-protocol)
 (setq org-protocol-default-template-key "o")
 
-(setq deft-directory "~/org"
+(setq deft-directory "~/org/roam"
       deft-extensions '("txt" "org")
       deft-recursive t)
 #+end_src
