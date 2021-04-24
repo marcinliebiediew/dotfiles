@@ -63,8 +63,10 @@ bindsym $windows+$alt+d exec "python ~/.config/scripts/grab_i3_floating.py --app
 # BROWSERS
 # bindsym $windows+$alt+b exec --no-startup-id qutebrowser
 bindsym $windows+$alt+b exec --no-startup-id vivaldi-stable 
+bindsym XF86Tools exec --no-startup-id emacsclient -e "(org-roam-dailies-today)" -nc
+
 # bindsym $windows+$alt+c exec --no-startup-id brave
-bindsym $windows+$alt+c exec --no-startup-id chromium
+bindsym $windows+$alt+c exec --no-startup-id brave
 # TERMINAL
 bindsym $windows+Return exec alacritty -e "tmux"
 bindsym $windows+$alt+i exec alacritty -e "ipython"
