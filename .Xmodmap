@@ -9,25 +9,29 @@
 ! keycode      37 = Hyper_L
 ! keycode      37 = Control_L 
 ! keycode      66 = Control_L
-! keycode      43 = apostrophe quotedbl 
-! keycode      44 = n N n n Left Left
-! keycode      45 = e E e e Down Down
-! keycode      46 = i I i i Up Up 
-! keycode      47 = o O o o Right Right
-! keycode      48 = apostrophe quotedbl apostrophe apostrophe Right Right
-! keycode      35 = bracketright braceright
-! keycode      29 = bracketleft braceleft 
-! keycode      30 = y
-! keycode      31 = u
-! keycode      32 = i
-! keycode      33 = o
-! keycode      34 = p 
-! keycode      56 = slash question
-! keycode      57 = comma less 
-! keycode      58 = b
-! keycode      59 = n
-! keycode      60 = m
-! keycode      61 = period greater
+! keycode      43 = apostrophe quotedbl
+
+keycode      29 = bracketleft braceleft
+keycode      30 = j J j j j j
+keycode      31 = l L l l l l
+keycode      32 = u
+keycode      33 = y
+keycode      34 = semicolon colon
+keycode      35 = apostrophe quotedbl apostrophe apostrophe Right Right
+
+keycode      43 = bracketright braceright
+keycode      44 = h H h h h h
+keycode      45 = n N n n Left Left
+keycode      46 = e E e e Down Down
+keycode      47 = i I i i Up Up
+keycode      48 = o O o o Right Right
+
+keycode      57 = slash question
+keycode      58 = k K k k k k
+keycode      59 = m M m m m m
+keycode      60 = comma less
+keycode      61 = period greater
+
 ! keycode      107 = Control_R
 ! keycode      105 = Print
 ! keycode      29 = q
