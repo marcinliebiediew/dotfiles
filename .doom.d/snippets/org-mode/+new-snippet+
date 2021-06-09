@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: Anki Systems, Languages, Hardware
+# key: ankics
+# --
+* COMMENT [[roam:Anki]]
+** 
+:PROPERTIES:
+:ANKI_DECK: Hardware, Languages, Systems
+:ANKI_NOTE_TYPE: Basic (and reversed card)
+:ANKI_TAGS: 
+:END:
+*** Front
+
+*** Back

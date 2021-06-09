@@ -9,19 +9,27 @@
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;(package! exwm)
 ; (package! svelte-mode)
-(package! monkeytype)
-(package! leetcode)
-(package! lastpass)
-; (package! frog-jump-buffer)
-(package! soundklaus)
-(package! emms)
+;; (package! monkeytype)
+;; (package! leetcode)
+;; (package! lastpass)
+;; ; (package! frog-jump-buffer)
+;; (package! soundklaus)
+;; (package! emms)
 ;(package! counsel-spotify)
 ;(package! spotify)
 ;(package! which-key-posframe)
 (package! org-roam-server)
 (package! toc-org)
 (package! graphviz-dot-mode)
-(package! nyan-mode)
+(package! anki-editor)
+(package! activity-watch-mode)
+;; (package! nyan-mode)
+;; (package! pamparam)
+;; (package! org-fc
+;;   :recipe
+;;   (:host github
+;;    :repo "l3kn/org-fc"
+;;    :files (:defaults "awk" "demo.org")))
 ;(package! company-graphviz-dot)
 ;;(package! eaf=
 ; (package! ctable)

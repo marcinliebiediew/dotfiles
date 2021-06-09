@@ -1,0 +1,16 @@
+# -*- mode: snippet -*-
+# name: dot_with_example
+# key: dot_with_example
+# --
+
+#+begin_src dot :file dot_success.png :cmdline -Kdot -Tpng
+digraph {
+    graph [truecolor=true bgcolor="#00000000"]
+    node  [fontcolor=white, style=filled, fillcolor="#777777ff"]
+    edge  [color="white"]
+
+    happy       [label="be happy",     fillcolor=yellow,fontcolor=black]
+
+    nature_life -> happy        [color="#ffff0022"];
+}
+#+end_src

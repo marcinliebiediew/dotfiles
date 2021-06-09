@@ -1,73 +1,15 @@
-#+STARTUP: overview
-#+VISIBILITY: folded
-* TOC :TOC@3:
-- [[#-start][🏇 start]]
-- [[#-ui][💄 UI]]
-  - [[#-gaps][🌌 gaps]]
-  - [[#bar_chart-status-bar][:bar_chart: status bar]]
-  - [[#-help-windows][🐕 help windows]]
-    - [[#ivy-posframe][ivy-posframe]]
-    - [[#which-key-posframe][which-key-posframe]]
-    - [[#hydra-posframe][hydra-posframe]]
-    - [[#code-completion-and-docs][code completion and docs]]
-  - [[#-nyan][😼 nyan]]
-- [[#-navigation][🧭 navigation]]
-    - [[#code-navigation][code navigation]]
-    -  [[#window-movement-sizing-and-placement][window movement, sizing and placement]]
-    - [[#text-movement][text movement]]
-    - [[#-sniping-windows-buffers-lines-chars][🎯 sniping windows, buffers, lines, chars]]
-    - [[#avy][avy]]
-    - [[#aw][aw]]
-    - [[#evil][evil]]
-    - [[#switch-window][switch-window]]
-    - [[#-history][📜 history]]
-    - [[#-search][🔎 search]]
-    - [[#-code][🥐 code]]
-- [[#-map][⌨ map]]
-  - [[#utils][utils]]
-- [[#-toolchains][⚙ toolchains]]
-  - [[#rust][Rust]]
-  - [[#js][JS]]
-- [[#-organize][🗄 organize]]
-  - [[#-projects][📽 projects]]
-  - [[#-org][🦄 org]]
-    - [[#clockin][clockin]]
-    - [[#fonts][fonts]]
-    - [[#util][util]]
-    - [[#agenda][agenda]]
-  - [[#-org-roam][🧠 org-roam]]
-  - [[#org-roam-server][org-roam-server]]
-  - [[#table-of-contents][table of contents]]
-  - [[#v1---v2-migration][V1 -> V2 migration]]
-  - [[#time-tracking][time tracking]]
-- [[#-app][📦 app]]
-  - [[#shortcuts][shortcuts]]
-  - [[#-mail][📧 mail]]
-  - [[#leetcode][leetcode]]
-  - [[#-lastpass][🔐 lastpass]]
-  - [[#-emms][🔊 emms]]
-  - [[#-soundcloud][🌤 soundcloud]]
-  - [[#graphs][graphs]]
-
-* 🏇 start
-#+begin_src emacs-lisp
 (setq user-full-name "Marcin Nowak-Liebiediew"
       user-mail-address "m.liebiediew@gmail.com")
 (setq doom-font (font-spec :family "monospace" :size 26 :weight 'semi-light)
       doom-variable-pitch-font (font-spec :family "sans" :size 24))
 (setq display-line-numbers-type nil)
 (setq fancy-splash-image "~/Pictures/8bitwinter2.png")
-#+end_src
-* 💄 UI
-** 🌌 gaps
-#+begin_src emacs-lisp
+
 ;; (use-package! exwm-outer-gaps
 ;;   :after (exwm xelb)
 ;;   :config
 ;;   (exwm-outer-gaps-mode +1))
-#+end_src
-** :bar_chart: status bar
-#+begin_src emacs-lisp
+
 (defun mnl/send-polybar-hook (name number)
   (start-process-shell-command "polybar-msg" nil (format "polybar-msg hook %s %s" name number)))
 
@@ -76,10 +18,7 @@
   (mnl/send-polybar-hook "exwm-workspace-total" 1))
 
 (add-hook! 'exwm-workspace-switch-hook #'mnl/update-polybar-exwm)
-#+end_src
-** 🐕 help windows
-*** ivy-posframe
-#+begin_src emacs-lisp
+
 ;; (use-package! ivy-posframe
 ;;   :config
 ;;   (ivy-posframe-mode 1)
@@ -93,9 +32,7 @@
 ;;   ;;                                 (left-fringe . 8)
 ;;   ;;                                 (right-fringe . 8)))
 ;;   )
-#+end_src
-*** which-key-posframe
-#+begin_src emacs-lisp
+
 ;; (use-package! which-key-posframe
 ;;   :config
 ;;   (which-key-posframe-mode)
@@ -105,17 +42,12 @@
 ;;   ;;                                       (right-fringe . 8)))
 ;;   )
 
-#+end_src
-*** hydra-posframe
-#+begin_src emacs-lisp
 ;; (use-package! hydra
 ;;   :config
 ;;   (setq hydra-hint-display-type 'posframe)
 ;; ;;  (setq hydra-posframe-show-params )
 ;;   )
-#+end_src
-*** code completion and docs
-#+begin_src emacs-lisp
+
 (use-package! lsp-ui
   ;;:straight t
   :hook (lsp-mode . lsp-ui-mode)
@@ -126,14 +58,9 @@
   (setq lsp-ui-doc-position 'at-point)
   (lsp-ui-doc-show))
 ;;(tooltip-mode)
-#+end_src
-** 😼 nyan
-#+begin_src emacs-lisp
+
 ;;(use-package! nyan-mode)
-#+end_src
-* 🧭 navigation
-*** code navigation
-#+begin_src emacs-lisp
+
 (defhydra +hydra/code-nav (:hint nil)
   "
  Buffer^^               Server^^                   Symbol
@@ -165,9 +92,7 @@
 
   ("SPC" nil "quit")
   )
-#+end_src
-***  window movement, sizing and placement
-#+begin_src emacs-lisp
+
 (defhydra +hydra/window-nav (:hint nil)
   "
   Switch Window: _n_:left  _e_:down  _i_:up  _o_:right
@@ -232,9 +157,7 @@
 
 
   ("SPC" nil "quit"))
-#+end_src
-*** text movement
-#+begin_src emacs-lisp
+
 (map! :g "<XF86Launch6>" #'goto-last-change)
 (map! :g "<XF86TouchpadToggle>" #'avy-goto-char-timer)
 (map! :g "<XF86TouchpadOn>" #'avy-goto-line)
@@ -258,26 +181,14 @@
 ;; (map! :g "?\s-&" (lambda (command)
 ;;              (interactive (list (read-shell-command "$ ")))
 ;;              (start-process-shell-command command nil command)))
-#+end_src
-***
-***
 
-*** 🎯 sniping windows, buffers, lines, chars
-*** avy
-#+begin_src emacs-lisp
 (setq avy-all-windows t)
 (setq avy-keys '(?n ?e ?i ?o ?m ?u ?y))
-#+end_src
-*** aw
-#+begin_src emacs-lisp
+
 (setq aw-keys '(?n ?e ?i ?o ?m ?u ?y))
-#+end_src
-*** evil
-#+begin_src emacs-lisp
+
 (setq evil-snipe-scope 'buffer)
-#+end_src
-*** TODO switch-window
-#+begin_src emacs-lisp
+
 (use-package! switch-window
   :config
   (setq switch-window-qwerty-shortcuts '("n" "e" "i" "o" "m" "u" "r"))
@@ -310,21 +221,14 @@
   ;; increase or decrease window's number, for example:
   ;; `split-window-below' `split-window-right' `maximize'.")
   )
-#+end_src
-*** 📜 history
-#+begin_src emacs-lisp
-#+end_src
-*** 🔎 search
-#+begin_src emacs-lisp
-#+end_src
-*** 🥐 code
-#+begin_src emacs-lisp
+
+
+
+
+
 (map! :g "s-t" #'lsp-describe-thing-at-point)
 (map! :g "s-d" #'lsp-goto-type-definition)
-#+end_src
 
-* ⌨ map
-#+begin_src emacs-lisp
 (setq-default evil-escape-key-sequence "ii")
 (setq-default evil-escape-delay 0.2)
 
@@ -333,9 +237,7 @@
 (map! :g "<f9>"  #'+hydra/code-nav/body)
 (map! :g "<XF86TouchpadOff>"  #'+hydra/window-nav/body)
 (map! :g "<XF86TouchpadOff>"  #'+hydra/window-nav/body)
-#+end_src
-** utils
-#+begin_src emacs-lisp
+
 (defvar hydra-stack nil)
 
 (defun hydra-push (expr)
@@ -346,26 +248,15 @@
   (let ((x (pop hydra-stack)))
     (when x
       (funcall x))))
-#+end_src
-* ⚙ toolchains
-** Rust
-#+begin_src emacs-lisp
+
 (after! rustic
   (setq lsp-rust-server 'rust-analyzer)
   (setq rustic-lsp-server 'rust-analyzer))
-#+end_src
-** JS
-#+begin_src emacs-lisp
-                                        ; (require 'svelte-mode)
-#+end_src
-* 🗄 organize
-** 📽 projects
-#+begin_src emacs-lisp
+
+; (require 'svelte-mode)
+
 (setq projectile-project-search-path '("~/Projects/"))
-#+end_src
-** 🦄 org
-*** clockin
-#+begin_src emacs-lisp
+
 (defun in-same-heading-as-clock-p ()
   "Check if the cursor is in the same heading as the current clock.
 That means:
@@ -410,9 +301,7 @@ That means:
 
 
 (add-hook! 'post-command-hook 'action-1)
-#+end_src
-*** fonts
-#+begin_src emacs-lisp
+
 (defun efs/org-font-setup ()
   ;; Replace list hyphen with dot
   (font-lock-add-keywords 'org-mode
@@ -439,16 +328,11 @@ That means:
   (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
-#+end_src
-*** util
-#+begin_src emacs-lisp
 (defun dw/read-file-as-string (path)
   (with-temp-buffer
     (insert-file-contents path)
     (buffer-string)))
-#+end_src
-*** agenda
-#+begin_src emacs-lisp
+
 (defun date-hook-fn ()
   (goto-char (line-end-position))
   (insert (format-time-string " :%m/%d/%Y %H:%M")))
@@ -642,9 +526,7 @@ That means:
 (setq deft-directory "~/org/roam"
       deft-extensions '("txt" "org")
       deft-recursive t)
-#+end_src
-** 🧠 org-roam
-#+begin_src emacs-lisp
+
 (use-package! org-roam
   :config
   (setq org-directory "~/org/")
@@ -701,9 +583,7 @@ That means:
    :after
    #'my/replace-file-with-id-link)
   )
-#+end_src
-** org-roam-server
-#+begin_src emacs-lisp
+
 (use-package! org-roam-server
   :config
   (setq org-roam-server-host "127.0.0.1"
@@ -732,9 +612,7 @@ That means:
   (smartparens-global-mode -1)
   (org-roam-server-mode)
   (smartparens-global-mode 1))
-#+end_src
-** table of contents
-#+begin_src emacs-lisp
+
 (use-package! toc-org
   :config
   (add-hook! 'org-mode-hook 'toc-org-mode)
@@ -747,9 +625,7 @@ That means:
 ;;   (add-hook 'markdown-mode-hook 'toc-org-mode)
 ;;   (define-key markdown-mode-map (kbd "\C-c\C-o") 'toc-org-markdown-follow-thing-at-point))
 ;; (warn "toc-org not found"))
-#+end_src
-** V1 -> V2 migration
-#+begin_src emacs-lisp
+
 (defun my/replace-file-with-id-link ()
   "Replaces file links with ID links where possible in current buffer."
   (interactive)
@@ -779,18 +655,11 @@ That means:
 ;;     (save-buffer)))
 
 ;; (org-roam-db-build-cache)
-#+end_src
-** time tracking
-#+begin_src emacs-lisp
+
 (use-package! activity-watch-mode
   :config
   (global-activity-watch-mode))
-#+end_src
 
-* 📦 app
-** shortcuts
-all windows spawn inside currently selected buffer
-#+begin_src emacs-lisp
 ;; (defhydra +hydra/app-launcher (:hint nil :exit t)
 ;;   "
 ;;   Anything: _r_un nything
@@ -822,9 +691,6 @@ all windows spawn inside currently selected buffer
 ;;          (start-process-shell-command command nil command)))
 ;;   ("q" nil)
 ;;   )
-#+end_src
-** 📧 mail
-#+begin_src emacs-lisp
 
 ;; (use-package! mu4e
 ;;   ;; :load-path "/usr/share/emacs/site-lisp/mu4e/"
@@ -860,37 +726,28 @@ all windows spawn inside currently selected buffer
 ;;         smtpmail-stream-type  'ssl)
 ;;   (setq message-send-mail-function 'smtpmail-send-it)
 ;;   (setq mu4e-compose-signature "Marcin"))
-#+end_src
 
-** leetcode
-#+begin_src emacs-lisp
 ;; (use-package! leetcode
 ;;   :config
 ;;   (setq leetcode-prefer-language "python3")
 ;;   (setq leetcode-prefer-sql "mysql")
 ;;   (setq leetcode-save-solutions t)
 ;;   (setq leetcode-directory "~/org/roam/science_and_engineering/formal_science/computer_science/algorithms_and_data_structures/leetcode"))
-#+end_src
-** 🔐 lastpass
-#+begin_src emacs-lisp
+
 ;; (use-package! lastpass
 ;;   :config
 ;;   :after (exwm xelb)
 ;;   (setq lastpass-user "m.liebiediew@gmail.com")
 ;;   (setq lastpass-trust-login t)
 ;;   (lastpass-auth-source-enable))
-#+end_src
-** 🔊 emms
-#+begin_src emacs-lisp
+
 ;; (use-package! emms
 ;;   :config
 ;;   (require 'emms-setup)
 ;;   (emms-standard)
 ;;   (emms-default-players)
 ;;   )
-#+end_src
-** 🌤 soundcloud
-#+begin_src emacs-lisp
+
 ;; (use-package! soundklaus
 ;;   :commands
 ;;   (soundklaus-activities
@@ -900,13 +757,10 @@ all windows spawn inside currently selected buffer
 ;;    soundklaus-my-tracks
 ;;    soundklaus-playlists
 ;;    soundklaus-tracks))
-#+end_src
-** graphs
-#+begin_src emacs-lisp
+
 (use-package! graphviz-dot-mode
   :config
   (setq graphviz-dot-indent-width 4))
 
 (use-package! company-graphviz-dot
   )
-#+end_src
