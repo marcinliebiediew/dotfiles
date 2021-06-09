@@ -1,30 +1,25 @@
 # vim: filetype=i3config
 
 set $windows Mod4
-set $caps Control
 set $ctrl Control
 set $alt Mod1
 set $fn XF86WakeUp
 set $altgr Mod5
-set $layout_control Mod4+Mod3
-set $monitor eDP-1-1 # my laptop's internal screen
+set $monitor eDP-1-1 
+floating_modifier $windows
 
 # SYSTEM 
 exec --no-startup-id aw-qt
 exec --no-startup-id jupyter notebook --NotebookApp.token= --no-browser --port 39999
 exec --no-startup-id sudo powertop --auto-tune
-exec_always --no-startup-id autotiling
-## DISPLAY & MULTIHEAD
 exec --no-startup-id dockd --daemon
 exec --no-startup-id xrandr --output eDP-1-1 --auto
-bindsym XF86Display exec "sh ~/.screenlayout/3screens.sh"
-bindsym Shift+XF86Display exec "sh ~/.screenlayout/onlylaptop.sh"
+exec --no-startup-id sudo kmonad ~/.config/keyboard/kmonad.kbd
+exec_always --no-startup-id autotiling
+exec_always bgchd -dir /home/marcin/Pictures/wallpapers/ -intv 30m -bcknd feh
 ## BACKLIGHT
 bindcode 232 exec light -U 2
 bindcode 233 exec light -A 2
-## LOCKSCREEN
-exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
-bindsym $windows+$alt+l exec --no-startup-id i3lock -i ~/Pictures/pinetree.png -c 000000 -e -f -t
 ## SOUND
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
@@ -36,123 +31,168 @@ bindsym $windows+$ctrl+$alt+space exec --no-startup-id  fish -c toggle_keymap
 ## HOTFIXES
 bindsym XF86Favorites exec --no-startup-id fish -c fix
 bindsym $windows+F10 exec --no-startup-id fish -c fix
-## WALLPAPER
-exec_always bgchd -dir /home/marcin/Pictures/wallpapers/ -intv 30m -bcknd feh
-bindsym $alt+w exec --no-startup-id bgctl next
-bindsym $alt+Shift+w exec --no-startup-id bgctl prev
 ## CLIPBOARD
 exec --no-startup-id greenclip daemon>/dev/null
-## SCREENSHOT
-bindsym Print --release exec "scrot -s /home/marcin/Pictures/Screenshots/screenshot-$(date +%F_%T).png -e 'xclip -selection c -t image/png < $f'"
-bindsym Shift+Print exec "scrot -s -u /home/marcin/Pictures/Screenshots/sc.png"
-bindsym $windows+Print exec fish -c rip_content
-bindsym $windows+Shift+Print exec "scrot -s -e 'mv $f /tmp/ && gimp /tmp/$f'"
-
-# CAPTURE
-bindsym $windows+XF86AudioMicMute exec fish -c voice
-bindsym $windows+F4 exec fish -c voice
-# bindsym F12 exec --no-startup-id "xdotool key ctrl+l; xdotool key ctrl+c; xclip -o >> ~/org/roam/20201211211144-bookmarks.org"
-
-# MENUS
-bindsym $windows+space exec "rofi -combi-modi drun,system -show drun"
-bindsym $windows+XF86TouchpadOff exec "rofi -modi window -show"
-bindsym $windows+$alt+e exec "rofimoji -s neutral --rofi-args \\" -color-window '#000000, #000000, #000000' -color-normal '#000000, #ffffff, #000000, #ffffff, #000000' -color-active '#000000, #b3e774, #000000, #ffffff, #b3e774' -color-urgent '#000000, #b3e774, #000000, #b3e774, #000000' -font 'JetBrains Mono 32' -show-icons\\""
-
-## APPS
-bindsym $windows+$alt+d exec "python ~/.config/scripts/grab_i3_floating.py --app spotify"
-# BROWSERS
-# bindsym $windows+$alt+b exec --no-startup-id qutebrowser
-bindsym $windows+$alt+b exec --no-startup-id vivaldi-stable 
-bindsym XF86Tools exec --no-startup-id emacsclient -e "(org-roam-dailies-today)" -nc
-
-# bindsym $windows+$alt+c exec --no-startup-id brave
-bindsym $windows+$alt+c exec --no-startup-id brave
-# TERMINAL
-bindsym $windows+Return exec alacritty -e "tmux"
-bindsym $windows+$alt+i exec alacritty -e "ipython"
-#bindsym $windows+f exec alacritty -e "ranger"
-# EDITORS
-bindsym $windows+$alt+p exec "python ~/.config/scripts/grab_i3_floating.py --app emacs"
-bindsym $windows+$alt+t exec emacsclient --eval '(org-capture)' -c
-bindsym $windows+$alt+v exec alacritty -e "nvim"
-bindsym $windows+$alt+a exec emacsclient -c --eval '(org-agenda nil "d")'
-bindsym $windows+$alt+z exec emacsclient --eval '(emacs-everywhere)' 
 
 # i3 CONTROL
-bindsym $alt+q kill
-bindsym $windows+$alt+$ctrl++c reload
-bindsym $windows+$alt+$ctrl+r restart
-bindsym $windows+Shift+q exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
-bindsym $windows+Shift+$alt+q exec "i3-msg exit"
-bindsym $windows+Shift+$alt+Control+q exit
+bindsym $windows+$alt+v kill
+bindsym $windows+Escape exit
+bindsym $windows+grave reload
+bindsym $windows+Tab restart
 
-# WORKSPACE FOCUS 
-bindsym $windows+Tab workspace next
-bindsym $windows+Shift+Tab workspace prev
-bindsym $windows+BackSpace workspace back_and_forth 
-
-# LAYOUT TYPE  
-bindsym $alt+f fullscreen toggle
-# bindsym $windows+f fullscreen toggle
-bindsym $windows+g layout tabbed
-bindsym $windows+d layout toggle split
-bindsym $windows+b focus mode_toggle
-bindsym $windows+Shift+b floating toggle
-bindsym $windows+j layout tabbed
-bindsym $windows+h layout toggle split
-bindsym $windows+k focus mode_toggle
-bindsym $windows+Shift+k floating toggle
-bindsym $windows+bracketleft focus parent
-bindsym $windows+apostrophe focus child
-bindsym $windows+minus split h
-bindsym $windows+equal split v
-bindsym $windows+asterisk floating enable; move absolute position 100 100
-bindsym $windows+bar floating enable; move absolute position 1600 100
-floating_modifier $windows
-# bindsym $windows+Shift+v split v; focus parent; fullscreen toggle; focus child
-# bindsym $windows+Shift+f focus parent; fullscreen toggle
-
-# LAYOUT  ARRANGE
-bindsym $windows+q move left
-bindsym $windows+w move down
-bindsym $windows+f move up
-bindsym $windows+p move right
-bindsym $windows+Left focus left
-bindsym $windows+Down focus down
-bindsym $windows+Up focus up
-bindsym $windows+Right focus right
-bindsym $windows+a focus left
-bindsym $windows+r focus down
-bindsym $windows+s focus up
-bindsym $windows+t focus right
+# FOCUS
+bindsym $windows+f fullscreen toggle
+bindsym $windows+w focus left
+bindsym $windows+p focus right
 bindsym $windows+n focus left
 bindsym $windows+e focus down
 bindsym $windows+i focus up
 bindsym $windows+o focus right
-bindsym $windows+z resize shrink width 55 px or 3 ppt
-bindsym $windows+x resize grow height 55 px or 3 ppt
-bindsym $windows+c resize shrink height 55 px or 3 ppt
-bindsym $windows+v resize grow width 55 px or 3 ppt
-# bindsym $windows+l move left
-# bindsym $windows+u move down
-# bindsym $windows+y move up
-# bindsym $windows+semicolon move right
-# bindsym $windows+Left focus left
-# bindsym $windows+Down focus down
-# bindsym $windows+Up focus up
-# bindsym $windows+Right focus right
-# bindsym $windows+n focus left
-# bindsym $windows+e focus down
-# bindsym $windows+i focus up
-# bindsym $windows+o focus right
-# bindsym $windows+m resize shrink width 55 px or 3 ppt
-# bindsym $windows+comma resize grow height 55 px or 3 ppt
-# bindsym $windows+period resize shrink height 55 px or 3 ppt
-# bindsym $windows+slash resize grow width 55 px or 3 ppt
+bindsym $windows+g focus mode_toggle
 
+# MENUS
+bindsym $windows+space exec "rofi -combi-modi drun,system -show drun"
+bindsym $windows+$alt+e exec "rofimoji -s neutral --rofi-args \\" -color-window '#000000, #000000, #000000' -color-normal '#000000, #ffffff, #000000, #ffffff, #000000' -color-active '#000000, #b3e774, #000000, #ffffff, #b3e774' -color-urgent '#000000, #b3e774, #000000, #b3e774, #000000' -font 'JetBrains Mono 32' -show-icons\\""
+
+# APPS
+bindsym $windows+$alt+d exec "python ~/.config/scripts/grab_i3_floating.py --app spotify"
+bindsym $windows+$alt+p exec "python ~/.config/scripts/grab_i3_floating.py --app emacs"
+ 
 # WORKSPACES
-# bindsym $windows+w exec --no-startup-id  fish -c change_workspace_name 
-# | read $ws | i3-input -F 'rename workspace to "$($focused_workspace_number):%s"' -P 'New name for this workspace: '  
+bindsym $windows+$alt+t workspace next
+bindsym $windows+$alt+s workspace prev
+bindsym $windows+$alt+f workspace back_and_forth 
+bindsym $windows+$alt+c exec "fish -c change_workspace_name"
+
+# MODES
+set $layout_mode g)aps f)loat z)laytog x)laytab c)talspl v)splitog `)focus tab)wallpaper arst)move ARST)resize
+set $text_mode t)emacs ev)erywhere 
+set $run_mode r)anger s)nake t)erminal  
+set $search_mode s)qute c)hrome b)rave v)ivaldi nyxt)  
+set $capture_mode orgc)apture s)creenshot t)oday v)oice 
+
+bindsym $windows+r mode $run_mode
+bindsym $windows+s mode $search_mode
+bindsym $windows+t mode $text_mode
+bindsym $windows+x mode $layout_mode
+bindsym $windows+c mode $capture_mode
+
+mode "$layout_mode" {
+    bindsym Shift+g  gaps inner all plus 5
+    bindsym g  gaps inner all minus 5
+
+    bindsym f floating toggle
+
+    bindsym p focus parent
+    bindsym d focus child
+
+    bindsym z layout toggle 
+    bindsym x layout tabbed
+    bindsym c layout toggle split
+    bindsym v split toggle
+
+    bindsym w floating enable; move absolute position 100 100
+
+    bindsym Shift+a resize shrink width 55 px or 3 ppt
+    bindsym Shift+r resize grow height 55 px or 3 ppt
+    bindsym Shift+s resize shrink height 55 px or 3 ppt
+    bindsym Shift+t resize grow width 55 px or 3 ppt
+
+    bindsym a move left
+    bindsym r move down
+    bindsym s move up
+    bindsym t move right
+    
+    bindsym Tab exec --no-startup-id bgctl next
+    bindsym Shift+Tab exec --no-startup-id bgctl prev
+
+    bindsym $windows+Shift+g gaps inner all plus 5
+    bindsym $windows+g gaps inner all minus 5
+
+    bindsym $windows+f floating toggle
+
+    bindsym $windows+p focus parent
+    bindsym $windows+d focus child
+
+    bindsym $windows+z layout toggle 
+    bindsym $windows+x layout tabbed
+    bindsym $windows+c layout toggle split
+    bindsym $windows+v split toggle
+
+    bindsym $windows+w floating enable; move absolute position 100 100
+
+    bindsym $windows+Shift+a resize shrink width 55 px or 3 ppt
+    bindsym $windows+Shift+r resize grow height 55 px or 3 ppt
+    bindsym $windows+Shift+s resize shrink height 55 px or 3 ppt
+    bindsym $windows+Shift+t resize grow width 55 px or 3 ppt
+
+    bindsym $windows+a move left
+    bindsym $windows+r move down
+    bindsym $windows+s move up
+    bindsym $windows+t move right
+
+    bindsym grave exec fish -c focus
+    bindsym $windows+grave exec fish -c focus
+
+    bindsym q mode "default"
+    bindsym Escape mode "default"
+}
+
+mode "$text_mode" {
+    bindsym t exec emacsclient -nc, mode default
+    bindsym $windows+t exec emacsclient -nc, mode default
+    bindsym v exec emacsclient --eval '(emacs-everywhere)' , mode default
+    bindsym $windows+v exec emacsclient --eval '(emacs-everywhere)' , mode default
+    
+    bindsym q mode "default"
+}
+ 
+mode "$search_mode" {
+    bindsym s exec qutebrowser, mode default
+    bindsym c exec chromium, mode default
+    bindsym v exec vivaldi-stable, mode default
+    bindsym b exec brave, mode default
+    bindsym $windows+s exec qutebrowser, mode default
+    bindsym $windows+c exec chromium, mode default
+    bindsym $windows+v exec vivaldi-stable, mode default
+    bindsym $windows+b exec brave, mode default
+    
+    bindsym q mode "default"
+}
+ 
+mode "$capture_mode" {
+# bindsym F12 exec --no-startup-id "xdotool key ctrl+l; xdotool key ctrl+c; xclip -o >> ~/org/roam/20201211211144-bookmarks.org"
+    bindsym c exec emacsclient --eval '(org-capture)' -c, mode default
+    bindsym $windows+c exec emacsclient --eval '(org-capture)' -c, mode default
+    bindsym a exec emacsclient -c --eval '(org-agenda nil "d")', mode default
+    bindsym $windows+a exec emacsclient -c --eval '(org-agenda nil "d")', mode default
+    bindsym t exec --no-startup-id emacsclient -e "(org-roam-dailies-today)" -nc, mode default
+    bindsym $windows+t exec --no-startup-id emacsclient -e "(org-roam-dailies-today)" -nc, mode default
+    
+    bindsym v exec fish -c voice
+    bindsym $windows+v exec fish -c voice
+
+    bindsym s --release exec "scrot -s /home/marcin/Pictures/Screenshots/screenshot-$(date +%F_%T).png -e 'xclip -selection c -t image/png < $f'", mode default
+    bindsym $windows+s exec fish -c rip_content, mode default
+
+    bindsym q mode "default"
+}
+ 
+mode "$run_mode" {
+    bindsym r exec alacritty -e tmux, mode default
+    bindsym s exec alacritty -e xonsh, mode default
+    bindsym t exec alacritty -e ranger, mode default
+    bindsym $windows+r exec alacritty -e tmux, mode default
+    bindsym $windows+s exec alacritty -e xonsh, mode default
+    bindsym $windows+t exec alacritty -e ranger, mode default
+
+    bindsym q mode "default"
+}
+
+
+
+
+
 set $ws1 "1:work"
 set $ws2 "2:work"
 set $ws3 "3:work"
@@ -214,6 +254,19 @@ bindsym $windows+$alt+Shift+8 move container to workspace number $ws18
 bindsym $windows+$alt+Shift+9 move container to workspace number $ws19
 bindsym $windows+$alt+Shift+0 move container to workspace number $ws20
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 # BAR
 bar {
     mode hide
@@ -246,38 +299,3 @@ gaps left 100
 gaps right 100
 gaps horizontal 10
 smart_gaps inverse_outer
-set $mode_gaps Gaps: (o) outer, (i) inner
-set $mode_gaps_outer Outer Gaps: +|-|0 (local), Shift + +|-|0 (global)
-set $mode_gaps_inner Inner Gaps: +|-|0 (local), Shift + +|-|0 (global)
-bindsym $windows+grave mode "$mode_gaps"
-mode "$mode_gaps" {
-        bindsym o      mode "$mode_gaps_outer"
-        bindsym i      mode "$mode_gaps_inner"
-        bindsym Return mode "default"
-        bindsym Escape mode "default"
-}
-mode "$mode_gaps_inner" {
-        bindsym plus  gaps inner current plus 5
-        bindsym minus gaps inner current minus 5
-        bindsym 0     gaps inner current set 0
-
-        bindsym Shift+plus  gaps inner all plus 5
-        bindsym Shift+minus gaps inner all minus 5
-        bindsym Shift+0     gaps inner all set 0
-
-        bindsym Return mode "default"
-        bindsym Escape mode "default"
-}
-mode "$mode_gaps_outer" {
-        bindsym plus  gaps outer current plus 5
-        bindsym minus gaps outer current minus 5
-        bindsym 0     gaps outer current set 0
-
-        bindsym Shift+plus  gaps outer all plus 5
-        bindsym Shift+minus gaps outer all minus 5
-        bindsym Shift+0     gaps outer all set 0
-
-        bindsym Return mode "default"
-        bindsym Escape mode "default"
-}
-
